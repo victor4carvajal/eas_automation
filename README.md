@@ -16,11 +16,7 @@ You can use this test automation framework to write
 
 &nbsp;
 
-This GUI and API test automation framework is developed and maintained by [Qxf2 Services](https://qxf2.com). This framework is written in __Python__ and is based on the __Page Object Model__ - a design pattern that makes it easy to maintain and develop robust tests. We have also included our __API test automation framework__ based on the player-interface pattern in this repository. You can now write your API tests along with your Selenium and Appium tests.
-
-We've implemented some version of this framework at several [clients](https://qxf2.com/clients). In all cases, this framework helped us write automated tests within the first week of our engagement. We hope you find this framework useful too!
-
-If you end up using our framework, please let us know by giving us a star on GitHub and/or dropping an email to __mak@qxf2.com__
+This framework is written in __Python__ and is based on the __Page Object Model__ - a design pattern that makes it easy to maintain and develop robust tests. We have also included our __API test automation framework__ based on the player-interface pattern in this repository. You can now write your API tests along with your Selenium and Appium tests.
 
 ------
 Setup
@@ -45,8 +41,6 @@ c) If you do not have it already, get pip (NOTE: Most recent Python distribution
 
 d) pip install -r requirements.txt to install dependencies
 
-If you ran into some problems on step (d), please report them as an issue or email Arun(mak@qxf2.com).
-
 
 __2. Setup for GUI/Selenium automation__
 
@@ -69,16 +63,7 @@ __If your setup goes well__, you should be able to run a UI test with this comma
 
 you should be able to run api test with this command:
 
-python -m pytest -k api --api_url 'https://api-test.dev.cltch.io/'
-
-__Optional steps__ for integrating with third-party tools:
-
-* [Integrate our Python test automation framework with Testrail](https://github.com/qxf2/qxf2-page-object-model/wiki/Integration-with-Testrail)
-* [Integrate our Python GUI/web automation framework with BrowserStack ](https://github.com/qxf2/qxf2-page-object-model/wiki/Integration-with-Cloud-Services#browserstack)
-* [Integrate our Python Selenium automation framework with Sauce Labs ](https://github.com/qxf2/qxf2-page-object-model/wiki/Integration-with-Cloud-Services#sauce-labs)
-* [Run Python integration tests on Jenkins ](https://github.com/qxf2/qxf2-page-object-model/wiki/Integration-with-CI-Tools#jenkins)
-* [Run Python integration tests on CircleCI ](https://github.com/qxf2/qxf2-page-object-model/wiki/Integration-with-CI-Tools#circleci)
-* [Post Python automation test results on Slack ](https://github.com/qxf2/qxf2-page-object-model/wiki/Utilities#slack-integration)
+python -m pytest -k api --api_url 'api_url'
 
 
 __3. Setup for Mobile/Appium automation__
@@ -96,17 +81,9 @@ pip install Appium-Python-Client
 __If your setup goes well__, you should be to run a simple mobile test with this command after starting the Appium and Android emulator:
 `python -m pytest -k mobile_bitcoin_price --mobile_os_version $Emulator_OS_Version --device_name $Emulator_Name`
 
-__Optional steps__ for more details on setting up appium and running tests on Android or iOS refer to below links:
-* [Get started with mobile automation: Appium & Python](https://qxf2.com/blog/appium-mobile-automation/)
-* [Get Set Test an iOS app using Appium and Python](https://qxf2.com/blog/get-set-test-an-ios-app-using-appium-and-python/)
-
-
 __4. Setup for API automation__
 
 There are no extra setup steps for API automation. To verify, run test_api_example now using command "pytest -k api -s"
-
-__Optional steps__ for more details on setting up API and running tests refer to below link:
-* [Easily Maintainable API Test Automation Framework](https://qxf2.com/blog/easily-maintainable-api-test-automation-framework/)
 
 -------------------
 Repository details
@@ -138,7 +115,7 @@ a)py.test [options]
 
 	-s	used to display the output on the screen			E.g: python -m pytest -s (This will run all the tests in the directory and subdirectories)
 	--base_url  used to run against specific URL			E.g: python -m pytest --base_url http://YOUR_localhost_URL (This will run against your local instance)
-	--remote_flag  used to run tests on Browserstack/Sauce Lab	E.g: python -m pytest -s --remote_flag Y -U https://qxf2.com
+	--remote_flag  used to run tests on Browserstack/Sauce Lab	E.g: python -m pytest -s --remote_flag Y -U url
 	--browser all	used to run the test against multiple browser 			E.g:python -m pytest ---browser all(This will run each test against the list of browsers specified in the conftest.py file,firefox and chrome in our case)
 	--ver/-O	used to run against different browser versions/os versions	E.g: python -m pytest --ver 44 -O 8 (This will run each test 4 times in different browser version(default=45 & 44) and OS(default=7 & 8) combination)
 	-h	help for more options 						E.g: python -m pytest -h
@@ -157,7 +134,7 @@ b)python -m pytest tests/test_example_form.py (can also be used to run standalon
 
 c)python -m pytest tests/test_example_form.py --browser Chrome (to run against chrome)
 
-d)python -m pytest tests/test_api_example.py (make sure to run sample cars-api available at qxf2/cars-api repository before api test run)
+d)python -m pytest tests/test_api_example.py
 
 e)python -m pytest tests/test_mobile_bitcoin_price --mobile_os_version (android version) --device_name (simulator) --app_path (.apk location on local) --remote_flag Y (to run Mobile test case on Broswestack)remote_credentials.py
 NOTE: For running tests in Browserstack, need to update Username/Accesskey from Browserstack Account to remote_credentials.py under conf.
@@ -185,8 +162,3 @@ This project uses:
  1. [BrowserStack](https://www.browserstack.com) for testing our web and mobile based tests on cloud across different platform and browsers.
 
  2. [CircleCI](https://circleci.com/) for continuous integration.
-
------------
-NEED HELP?
------------
-Struggling to get your GUI automation going? You can hire Qxf2 Services to help. Contact us at mak@qxf2.com
