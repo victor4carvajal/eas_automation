@@ -6,7 +6,7 @@ class Auth_Endpoint_Endpoints:
 
     def auth_url(self,suffix=''):
         "append api endpoint to the base url"
-        return self.api_base_url+'api/v1/auth'+suffix
+        return self.auth_api_base_url+'api/v1/auth'+suffix
 
     def auth_token(self,headers,payload):
         "gets access token"

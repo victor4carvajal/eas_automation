@@ -87,14 +87,15 @@ def test_mobile_obj(mobile_os_name, mobile_os_version, device_name, app_package,
         print("Python says:%s"%str(e))
 
 @pytest.fixture
-def test_api_obj(interactivemode_flag, request, api_url):
+def test_api_obj(interactivemode_flag, request, auth_api_url, aes_api_url):
     "Return an instance of Base Page that knows about the third party integrations"
     try:
-        if interactivemode_flag.lower()=='y':
-            api_url,session_flag = interactive_mode.ask_questions_api(api_url)
-            test_api_obj = API_Player(api_url, session_flag)
+        if interactivemode_flag.lower() == 'y':
+            auth_api_url, session_flag = interactive_mode.ask_questions_api(auth_api_url)
+            aes_api_url, _ = interactive_mode.ask_questions_api(aes_api_url)
+            test_api_obj = API_Player(auth_api_url, aes_api_url, session_flag=session_flag)
         else:
-            test_api_obj = API_Player(url=api_url, session_flag=True, log_file_path=request.module.__name__)
+            test_api_obj = API_Player(auth_url=auth_api_url, aes_url=aes_api_url, session_flag=True, log_file_path=request.module.__name__)
             test_api_obj.log_file_path = request.module.__name__
         yield test_api_obj
 
@@ -136,10 +137,20 @@ def base_url(request):
         print("Python says:%s"%str(e))
 
 @pytest.fixture
-def api_url(request):
+def auth_api_url(request):
     "pytest fixture for base url"
     try:
-        return request.config.getoption("--api_url")
+        return request.config.getoption("--auth_api_url")
+
+    except Exception as e:
+        print("Exception when trying to run test: %s"%__file__)
+        print("Python says:%s"%str(e))
+
+@pytest.fixture
+def aes_api_url(request):
+    "pytest fixture for base url"
+    try:
+        return request.config.getoption("--aes_api_url")
 
     except Exception as e:
         print("Exception when trying to run test: %s"%__file__)
@@ -494,9 +505,13 @@ def pytest_addoption(parser):
                             dest="url",
                             default=base_url_conf.base_url,
                             help="The url of the application")
-        parser.addoption("--api_url",
+        parser.addoption("--auth_api_url",
                             dest="url",
-                            default=base_url_conf.api_base_url,
+                            default=base_url_conf.auth_api_base_url,
+                            help="The url of the api")
+        parser.addoption("--aes_api_url",
+                            dest="url",
+                            default=base_url_conf.aes_api_base_url,
                             help="The url of the api")
         parser.addoption("--testrail_flag",
                             dest="testrail_flag",
