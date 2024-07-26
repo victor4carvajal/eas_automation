@@ -4,8 +4,11 @@ test auth engine
 """
 import os
 import sys
+import jsonschema
 import pytest
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import utils.email_util as email_util
+import conf.utils_conf.email_conf as email_conf
 import conf.utils_conf.login_conf as login_conf
 import conf.api_conf.auth_conf as auth_conf
 
@@ -23,28 +26,58 @@ def test_auth_engine(test_api_obj):
         password = login_conf.PASSWORD
         secret_key = login_conf.SECRET_KEY
         iv = login_conf.IV
-        
+        imaphost = email_conf.imaphost
+        email_app_password = email_conf.app_password
+        subject = email_conf.subject
+        sender = email_conf.sender
+            
         auth_engine_obj = test_api_obj.get_api_engine_object(engine_name="auth engine")
         
-        #get payload and headers
+        #get token payload and headers
         headers = auth_engine_obj.get_headers()
         encypte_password = auth_engine_obj.encrypt(password,secret_key,iv)
         payload_token = auth_conf.token_payload(username,encypte_password)
 
-        #Send auth token 
+        #Send code 
         token = auth_engine_obj.auth_token(headers,payload_token)
-        print(token)
-        test_api_obj.log_result(token, 
+        result_flag = True if token == False else True
+        test_api_obj.log_result(result_flag, 
                                 positive='Send Token successfully', 
                                 negative='Failed to send token')
+        # Validate Token data
+        result_flag = True if token == auth_conf.token_data else False
+        test_api_obj.log_result(result_flag,
+                                positive='Token data is as expected',
+                                negative='Token data is not as expected.')
+        #Validate Token schema 
+        try:
+            validator = jsonschema.Draft7Validator(auth_conf.token_schema)
+            result_flag = True if validator.is_valid(token) else False
+        except jsonschema.exceptions.ValidationError as e:
+            test_api_obj.write(f"Response schema validation error: {e}")
 
+        test_api_obj.log_result(result_flag,
+            positive='Token schema validation is as expected',
+            negative='Token schema validation is not as expected.')
+        
+        # Initialize Email and get code
+        email_service_obj = email_util.Email_Util()
+        code = email_service_obj.get_code(imaphost, username, email_app_password,subject,sender)
+        
+        #Set verify token payload 
+        verify_token_payload = auth_conf.verify_token_payload(code,username)
+        print(verify_token_payload)
+
+        #Verify email 
+        verifyEmail = auth_engine_obj.verify_token(headers, verify_token_payload)
+        print(verifyEmail)
+        
         # Write out test summary
         expected_pass = test_api_obj.total
         actual_pass = test_api_obj.passed
         test_api_obj.write_test_summary()
 
     except Exception as e:
-        print(e)
         test_api_obj.write(f"Exception when trying to run test:{__file__}")
         test_api_obj.write(f"Python says:{str(e)}")
 

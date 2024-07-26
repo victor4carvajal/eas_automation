@@ -10,11 +10,8 @@ class Auth_Endpoint_Endpoints:
 
     def auth_token(self,headers,payload):
         "gets access token"
-        print("headers: ",headers)
-        print("payload: ",payload)
         url = self.auth_url(f"/token")
         response = self.post(url,headers=headers,json=payload)
-        print("response: ",response)
         return {
             'text':response.get('text',None),
             'json_response':response.get('json_response',{}),
@@ -22,7 +19,7 @@ class Auth_Endpoint_Endpoints:
             'error':response.get('error',None)
         }
     
-    def veify_token(self,payload,headers):
+    def verify_token(self,headers,payload):
         "verifies access token"
         url = self.auth_url(f"/verifyToken")
         response = self.post(url,headers=headers,json=payload)

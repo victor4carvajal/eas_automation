@@ -13,7 +13,10 @@ A simple IMAP util that will help us with account activation
 3. Enhance get_latest_email_uid to make all parameters optional
 """
 #The import statements import: standard Python modules,conf
+import re
 import os,sys,time,imaplib,email
+
+from bs4 import BeautifulSoup
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import conf.utils_conf.email_conf as conf_file
 
@@ -31,6 +34,7 @@ class Email_Util:
         "Login to the email"
         result_flag = False
         try:
+            time.sleep(5)
             self.mail.login(username,password)
         except Exception as e:
             print('\nException in Email_Util.login')
@@ -41,63 +45,73 @@ class Email_Util:
             result_flag = True
 
         return result_flag
+    
+    def search_email(self, subject, sender):
+        try:
+            self.mail.select('inbox')
+            subject_criteria = f'SUBJECT "{subject}"'
+            from_criteria = f'FROM "{sender}"'
+            search_criteria = f'({subject_criteria} {from_criteria})'
+            status, messages = self.mail.search(None, search_criteria)
+            mail_ids = messages[0].decode().split()
+            return mail_ids
+        except Exception as e:
+            print(f"Exception in Email_Util.search_email\nPYTHON SAYS:\n{str(e)}")
+            return []
+        
+    def fetch_email_body(self, mail_id):
+        try:
+            status, msg_data = self.mail.fetch(mail_id, '(RFC822)')
+            for response_part in msg_data:
+                if isinstance(response_part, tuple):
+                    msg = email.message_from_bytes(response_part[1])
+                    if msg.is_multipart():
+                        for part in msg.walk():
+                            content_type = part.get_content_type()
+                            content_disposition = str(part.get('Content-Disposition'))
 
+                            if 'attachment' not in content_disposition:
+                                if content_type == 'text/html':
+                                    html_content = part.get_payload(decode=True).decode('utf-8', errors='replace')
+                                    soup = BeautifulSoup(html_content, 'html.parser')
+                                    body = soup.get_text()
+                                    return body
+                    else:
+                        if msg.get_content_type() == 'text/html':
+                            html_content = msg.get_payload(decode=True).decode('utf-8', errors='replace')
+                            soup = BeautifulSoup(html_content, 'html.parser')
+                            body = soup.get_text()
+                            return body
+        except Exception as e:
+            print(f"Exception in Email_Util.fetch_email_body\nPYTHON SAYS:\n{str(e)}")
+            return None
 
-    def get_folders(self):
-        "Return a list of folders"
-        return self.mail.list()
-
-
-    def select_folder(self,folder):
-        "Select the given folder if it exists. E.g.: [Gmail]/Trash"
-        result_flag = False
-        response = self.mail.select(folder)
-        if response[0] == 'OK':
-            result_flag = True
-
-        return result_flag
-
-
-    def get_latest_email_uid(self,subject=None,sender=None,time_delta=10,wait_time=300):
-        "Search for a subject and return the latest unique ids of the emails"
-        uid = None
-        time_elapsed = 0
-        search_string = ''
-        if subject is None and sender is None:
-            search_string = 'ALL'
-
-        if subject is None and sender is not None:
-            search_string = '(FROM "{sender}")'.format(sender=sender)
-
-        if subject is not None and sender is None:
-            search_string = '(SUBJECT "{subject}")'.format(subject=subject)
-
-        if subject is not None and sender is not None:
-            search_string = '(FROM "{sender}" SUBJECT "{subject}")'.format(sender=sender,subject=subject)
-
-        print("  - Automation will be in search/wait mode for max %s seconds"%wait_time)
-        while (time_elapsed < wait_time and uid is None):
-            time.sleep(time_delta)
-            data = self.mail.uid('search',None,str(search_string))
-
-            if data[0].strip() != '': #Check for an empty set
-                uid = data[0].split()[-1]
-
-            time_elapsed += time_delta
-
-        return uid
-
-
-    def fetch_email_body(self,uid):
-        "Fetch the email body for a given uid"
-        email_body = []
-        if uid is not None:
-            data = self.mail.uid('fetch',uid,'(RFC822)')
-            raw_email = data[0][1]
-            email_msg = email.message_from_string(raw_email)
-            email_body = self.get_email_body(email_msg)
-
-        return email_body
+        return None
+    
+    def extract_verification_code(self, email_body):
+        "Extract the verification code from the email body"
+        match = re.search(r'Your user access verification code is:\s*(\d+)', email_body)
+        if match:
+            return match.group(1)
+        else:
+            print("Verification code not found.")
+            return None
+    
+    def get_last_email_body(self, subject, sender):
+        try:
+            mail_ids = self.search_email(subject, sender)
+            
+            if not mail_ids:
+                print("No emails found.")
+                return None
+            
+            last_mail_id = mail_ids[-1]
+            body = self.fetch_email_body(last_mail_id)
+            
+            return body
+        except Exception as e:
+            print(f"Exception in Email_Util.get_last_email_body\nPYTHON SAYS:\n{str(e)}")
+            return None
 
 
     def get_email_body(self,email_msg):
@@ -122,114 +136,14 @@ class Email_Util:
             result_flag = True
 
         return result_flag
+    
+    def get_code(self,imaphost,username,email_app_password,subject,sender):
+        "gets code from email"
+        self.connect(imaphost)
+        self.login(username,email_app_password)
+        body = self.get_last_email_body(subject,sender)
+        code = self.extract_verification_code(body)
+        self.logout()
 
-
-#---EXAMPLE USAGE---
-if __name__=='__main__':
-    #Fetching conf details from the conf file
-    imap_host = conf_file.imaphost
-    username = conf_file.username
-    password = conf_file.app_password
-
-    #Initialize the email object
-    email_obj = Email_Util()
-
-    #Connect to the IMAP host
-    email_obj.connect(imap_host)
-
-    #Login
-    if email_obj.login(username,password):
-        print("PASS: Successfully logged in.")
-    else:
-        print("FAIL: Failed to login")
-
-    #Get a list of folder
-    folders = email_obj.get_folders()
-    if folders != None or []:
-        print("PASS: Email folders:", email_obj.get_folders())
-
-    else:
-        print("FAIL: Didn't get folder details")
-
-    #Select a folder
-    if email_obj.select_folder('Inbox'):
-        print("PASS: Successfully selected the folder: Inbox")
-    else:
-        print("FAIL: Failed to select the folder: Inbox")
-
-    #Get the latest email's unique id
-    uid = email_obj.get_latest_email_uid(wait_time=300)
-    if uid != None:
-        print("PASS: Unique id of the latest email is: ",uid)
-    else:
-        print("FAIL: Didn't get unique id of latest email")
-
-    #A. Look for an Email from provided sender, print uid and check it's contents
-    uid = email_obj.get_latest_email_uid(sender="Andy from Google",wait_time=300)
-    if uid != None:
-        print("PASS: Unique id of the latest email with given sender is: ",uid)
-
-        #Check the text of the latest email id
-        email_body = email_obj.fetch_email_body(uid)
-        data_flag = False
-        print("  - Automation checking mail contents")
-        for line in email_body:
-            line = line.replace('=','')
-            line = line.replace('<','')
-            line = line.replace('>','')
-
-            if "Hi Email_Util" and "This email was sent to you" in line:
-                data_flag = True
-                break
-        if data_flag == True:
-            print("PASS: Automation provided correct Email details. Email contents matched with provided data.")
-        else:
-            print("FAIL: Provided data not matched with Email contents. Looks like automation provided incorrect Email details")
-
-    else:
-        print("FAIL: After wait of 5 mins, looks like there is no email present with given sender")
-
-    #B. Look for an Email with provided subject, print uid, find Qxf2 POM address and compare with expected address
-    uid = email_obj.get_latest_email_uid(subject="Qxf2 Services: Public POM Link",wait_time=300)
-    if uid != None:
-        print("PASS: Unique id of the latest email with given subject is: ",uid)
-        #Get pom url from email body
-        email_body = email_obj.fetch_email_body(uid)
-        expected_pom_url = "https://github.com/qxf2/qxf2-page-object-model"
-        pom_url = None
-        data_flag = False
-        print("  - Automation checking mail contents")
-        for body in email_body:
-            search_str = "/qxf2/"
-            body = body.split()
-            for element in body:
-                if search_str in element:
-                    pom_url = element
-                    data_flag = True
-                    break
-
-            if data_flag == True:
-                break
-
-        if data_flag == True and expected_pom_url == pom_url:
-            print("PASS: Automation provided correct mail details. Got correct Qxf2 POM url from mail body. URL: %s"%pom_url)
-        else:
-            print("FAIL: Actual POM url not matched with expected pom url. Actual URL got from email: %s"%pom_url)
-
-    else:
-        print("FAIL: After wait of 5 mins, looks like there is no email present with given subject")
-
-    #C. Look for an Email with provided sender and subject and print uid
-    uid = email_obj.get_latest_email_uid(subject="get more out of your new Google Account",sender="andy-noreply@google.com",wait_time=300)
-    if uid != None:
-        print("PASS: Unique id of the latest email with given subject and sender is: ",uid)
-    else:
-        print("FAIL: After wait of 5 mins, looks like there is no email present with given subject and sender")
-
-    #D. Look for an Email with non-existant sender and non-existant subject details
-    uid = email_obj.get_latest_email_uid(subject="Activate your account",sender="support@qxf2.com",wait_time=120) #you can change wait time by setting wait_time variable
-    if uid != None:
-        print("FAIL: Unique id of the latest email with non-existant subject and non-existant sender is: ",uid)
-    else:
-        print("PASS: After wait of 2 mins, looks like there is no email present with given non-existant subject and non-existant sender")
-
+        return code
+        

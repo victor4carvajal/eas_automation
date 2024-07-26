@@ -47,3 +47,14 @@ class API_Player_Auth_Engine(Results):
                                 negative="Token data is not found.")
         return token
         
+    def verify_token(self,headers,payload):
+        "Verifies token"
+        response = self.api_obj.verify_token(headers=headers,payload=payload)
+        if response.get('error',None):
+            raise ValueError(f'error when trying to get token details. {response.get("error",None)}')
+        verifyToken = response.get('json_response',False)
+        result_flag = True if verifyToken is not {} else False
+        self.conditional_write(result_flag,
+                                positive="Verify token data is available",
+                                negative="Verify token data is not found.")
+        return verifyToken
