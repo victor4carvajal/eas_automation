@@ -2,6 +2,8 @@ import os
 #Details needed for the Gmail
 #Fill out the email details over here
 imaphost ="imap.gmail.com"  #Add imap hostname of your email client
+subject = "Please verify your sign in"
+sender = "info@gmstek.com"
 username = os.environ.get('USERNAME')
 
 #Login has to use the app password because of Gmail security configuration
@@ -14,7 +16,7 @@ app_password = os.environ.get('APP_PASSWORD')
 #Details for sending pytest report
 smtp_ssl_host = 'smtp.gmail.com'  # Add smtp ssl host of your email client
 smtp_ssl_port = 465  # Add smtp ssl port number of your email client
-sender = 'abc@xyz.com' #Add senders email address here
+sender1 = 'abc@xyz.com' #Add senders email address here
 targets = ['asd@xyz.com','qwe@xyz.com'] # Add recipients email address in a list
 
 
