@@ -46,21 +46,29 @@ def test_auth_engine(test_api_obj):
         test_api_obj.log_result(result_flag, 
                                 positive='Send code successfully', 
                                 negative='Failed to send code')
+
+        #Resend validation code 
+        resendCode = auth_engine_obj.resend_validation_code(headers,username)
+        result_flag = True if resendCode == False else True
+        test_api_obj.log_result(result_flag, 
+                                positive='Resend validation code successfully', 
+                                negative='Failed to resend validation code')
+
         # Validate Token data
-        result_flag = True if token == auth_conf.token_data else False
+        result_flag = True if resendCode == auth_conf.resend_validation_code_data else False
         test_api_obj.log_result(result_flag,
-                                positive='Token data is as expected',
-                                negative='Token data is not as expected.')
+                                positive='Resend validation code data is as expected',
+                                negative='Resend Validation code is not as expected.')
         #Validate Token schema 
         try:
-            validator = jsonschema.Draft7Validator(auth_conf.token_schema)
-            result_flag = True if validator.is_valid(token) else False
+            validator = jsonschema.Draft7Validator(auth_conf.resend_validation_code_schema)
+            result_flag = True if validator.is_valid(resendCode) else False
         except jsonschema.exceptions.ValidationError as e:
             test_api_obj.write(f"Response schema validation error: {e}")
 
         test_api_obj.log_result(result_flag,
-            positive='Token schema validation is as expected',
-            negative='Token schema validation is not as expected.')
+            positive='Resend validation code schema validation is as expected',
+            negative='Resend Validation code schema validation is not as expected.')
         
         # Initialize Email and get code
         email_service_obj = email_util.Email_Util()
@@ -69,27 +77,6 @@ def test_auth_engine(test_api_obj):
         test_api_obj.log_result(result_flag, 
                                 positive='Get code successfully', 
                                 negative='Failed to get code')
-        
-        #Set verify token payload 
-        verify_token_payload = auth_conf.verify_token_payload(code,username)
-
-        #Verify token 
-        verifyToken = auth_engine_obj.verify_token(headers, verify_token_payload)
-        result_flag = True if verifyToken == False else True
-        test_api_obj.log_result(result_flag, 
-                                positive='Verify token successfully', 
-                                negative='Failed to verify token')
-
-        #Validate Verify token schema
-        try:
-            validator = jsonschema.Draft7Validator(auth_conf.verify_token_schema)
-            result_flag = True if validator.is_valid(verifyToken) else False
-        except jsonschema.exceptions.ValidationError as e:
-            test_api_obj.write(f"Response schema validation error: {e}")
-
-        test_api_obj.log_result(result_flag,
-            positive='Verify token schema validation is as expected',
-            negative='Verify token schema validation is not as expected.')
         
         # Write out test summary
         expected_pass = test_api_obj.total

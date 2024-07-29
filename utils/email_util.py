@@ -146,4 +146,12 @@ class Email_Util:
         self.logout()
 
         return code
-        
+    
+    def get_password_reset_email(self,imaphost,username,email_app_password,subject,sender):
+        "gets password reset email"
+        self.connect(imaphost)
+        self.login(username,email_app_password)
+        body = self.get_last_email_body(subject,sender)
+        self.logout()
+
+        return body
