@@ -204,3 +204,4 @@ resend_validation_code_schema = {
 }
 
 send_password_reset_email_data = None
+send_password_reset_email_schema = {}
