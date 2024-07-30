@@ -293,6 +293,8 @@ class Base_Page(Borg,unittest.TestCase):
             self.driver.get(url)
         self.wait(wait_time)
 
+    def open_reset_password(self,url,wait_time=2):
+        self.driver.get(url)
 
     def get_current_url(self):
         "Get the current URL"
