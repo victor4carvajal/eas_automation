@@ -30,10 +30,10 @@ class Auth_Endpoint_Endpoints:
             'error':response.get('error',None)
         }
     
-    def resend_validation_code(self,payload,headers,userName):
+    def resend_validation_code(self,headers,userName):
         "resend validation code"
         url = self.auth_url(f"/resendValidationCode/{userName}")
-        response = self.post(url,headers=headers,json=payload)
+        response = self.post(url,headers=headers)
         return {
             'text':response.get('text',None),
             'json_response':response.get('json_response',{}),
@@ -41,6 +41,18 @@ class Auth_Endpoint_Endpoints:
             'error':response.get('error',None)
         }
     
+    def send_password_reset_email(self,headers,userName):
+        "Send password reset to email"
+        url = self.auth_url(f"/SendPasswordResetEmail/{userName}")
+        response = self.post(url,headers=headers)
+        return {
+            'text':response.get('text',None),
+            'json_response':response.get('json_response',{}),
+            'status_code':response.get('status_code',None),
+            'error':response.get('error',None)
+        }
+    
+    # Not in use 
     def vendor(self,payload,headers):
         "vendor"
         url = self.auth_url(f"/vendor")
@@ -52,6 +64,7 @@ class Auth_Endpoint_Endpoints:
             'error':response.get('error',None)
         }
     
+    #Not in use
     def request_reset_password(self,payload,headers,email):
         "Requests reset password"
         url = self.auth_url(f"/RequestResetPassword/{email}")
@@ -88,28 +101,6 @@ class Auth_Endpoint_Endpoints:
     def verify_token_reset_password(self,payload,headers):
         "Verifies token reset password"
         url = self.auth_url(f"/VerifyTokenResetPassword")
-        response = self.post(url,headers=headers,json=payload)
-        return {
-            'text':response.get('text',None),
-            'json_response':response.get('json_response',{}),
-            'status_code':response.get('status_code',None),
-            'error':response.get('error',None)
-        }
-    
-    def send_password_reset_email(self,payload,headers,email):
-        "Send password reset to email"
-        url = self.auth_url(f"/SendPasswordResetEmail/{email}")
-        response = self.post(url,headers=headers,json=payload)
-        return {
-            'text':response.get('text',None),
-            'json_response':response.get('json_response',{}),
-            'status_code':response.get('status_code',None),
-            'error':response.get('error',None)
-        }
-    
-    def send_password_reset_email(self,payload,headers,email):
-        "Send password reset to email"
-        url = self.auth_url(f"/SendPasswordResetEmail/{email}")
         response = self.post(url,headers=headers,json=payload)
         return {
             'text':response.get('text',None),

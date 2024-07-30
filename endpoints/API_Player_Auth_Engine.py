@@ -36,7 +36,7 @@ class API_Player_Auth_Engine(Results):
         return headers
 
     def auth_token(self,headers,payload):
-        "get auth token"
+
         response = self.api_obj.auth_token(headers=headers,payload=payload)
         if response.get('error',None):
             raise ValueError(f'error when trying to get token details. {response.get("error",None)}')
@@ -48,7 +48,7 @@ class API_Player_Auth_Engine(Results):
         return token
         
     def verify_token(self,headers,payload):
-        "Verifies token"
+
         response = self.api_obj.verify_token(headers=headers,payload=payload)
         if response.get('error',None):
             raise ValueError(f'error when trying to get token details. {response.get("error",None)}')
@@ -58,3 +58,27 @@ class API_Player_Auth_Engine(Results):
                                 positive="Verify token data is available",
                                 negative="Verify token data is not found.")
         return verifyToken
+    
+    def resend_validation_code(self,headers,userName):
+
+        response = self.api_obj.resend_validation_code(headers=headers,userName=userName)
+        if response.get('error',None):
+            raise ValueError(f'error when trying to resend validation code. {response.get("error",None)}')
+        resendValidationCode = response.get('json_response',False)
+        result_flag = True if resendValidationCode is not {} else False
+        self.conditional_write(result_flag,
+                                positive="Resend Validation code data is available",
+                                negative="Resend Validation code data is not found.")
+        return resendValidationCode
+    
+    def send_password_reset_email(self,headers,userName):
+
+        response = self.api_obj.send_password_reset_email(headers=headers,userName=userName)
+        if response.get('error',None):
+            raise ValueError(f'error when trying to send password reset email. {response.get("error",None)}')
+        sendPasswordResetEmail = response.get('json_response',False)
+        result_flag = True if sendPasswordResetEmail is not {} else False
+        self.conditional_write(result_flag,
+                                positive="Send password reset email data is available",
+                                negative="Send password reset email data is not found.")
+        return sendPasswordResetEmail

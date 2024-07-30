@@ -144,3 +144,64 @@ verify_token_schema = {
     "success"
   ]
 }
+
+verify_token_schema = {
+  "type": "object",
+  "properties": {
+    "content": {
+      "type": "object",
+      "properties": {
+        "userName": { "type": "string" },
+        "email": { "type": "string" },
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "lastLogon": { "type": "string" },
+        "authToken": { "type": "string" },
+        "simpleToken": { "type": "string" },
+        "expiresIn": { "type": "integer" },
+        "changePassword": { "type": "boolean" },
+        "firstLogin": { "type": "boolean" }
+      },
+      "required": [
+        "userName",
+        "email",
+        "firstName",
+        "lastName",
+        "lastLogon",
+        "authToken",
+        "simpleToken",
+        "expiresIn",
+        "changePassword",
+        "firstLogin"
+      ]
+    },
+    "errorList": { "type": "object" },
+    "successList": { "type": "object" },
+    "warningList": { "type": "object" },
+    "success": { "type": "boolean" }
+  },
+  "required": ["content", "errorList", "successList", "warningList", "success"]
+}
+
+resend_validation_code_data = {
+    "content": "The code was sent to your email.",
+    "errorList": {},
+    "successList": {},
+    "warningList": {},
+    "success": True
+}
+
+resend_validation_code_schema = {
+  "type": "object",
+  "properties": {
+    "content": { "type": "string" },
+    "errorList": { "type": "object" },
+    "successList": { "type": "object" },
+    "warningList": { "type": "object" },
+    "success": { "type": "boolean" }
+  },
+  "required": ["content", "errorList", "successList", "warningList", "success"]
+}
+
+send_password_reset_email_data = None
+send_password_reset_email_schema = {}

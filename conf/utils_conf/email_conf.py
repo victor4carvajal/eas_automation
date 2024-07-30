@@ -2,7 +2,8 @@ import os
 #Details needed for the Gmail
 #Fill out the email details over here
 imaphost ="imap.gmail.com"  #Add imap hostname of your email client
-subject = "Please verify your sign in"
+verify_email_subject = "Please verify your sign in"
+send_password_reset_email_subject = "Please reset your password"
 sender = "info@gmstek.com"
 username = os.environ.get('USERNAME')
 
