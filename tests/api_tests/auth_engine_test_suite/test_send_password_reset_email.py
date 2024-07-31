@@ -36,20 +36,20 @@ def test_auth_engine(test_api_obj,test_obj):
         #get token payload and headers
         headers = auth_engine_obj.get_headers()
 
-        #Send password reset email
+        #Given I send password reset email
         passwordResetEmail = auth_engine_obj.send_password_reset_email(headers,username)
         result_flag = True if passwordResetEmail == False else True
         test_api_obj.log_result(result_flag, 
                                 positive='Send password reset email successfully', 
-                                negative='Failed to send password reset mail')
+                                negative='Failed to send password reset email')
         
-        # Validate send password reset data
+        # When I validate send password reset data
         result_flag = True if passwordResetEmail == auth_conf.send_password_reset_email_data else False
         test_api_obj.log_result(result_flag,
                                 positive='Send password reset email data is as expected',
                                 negative='Send password reset email data is not as expected.')
         
-        #Validate send reset password email schema
+        #Then I validate send reset password email schema
         try:
             validator = jsonschema.Draft7Validator(auth_conf.send_password_reset_email_schema)
             result_flag = True if validator.is_valid(passwordResetEmail) else False
@@ -60,16 +60,24 @@ def test_auth_engine(test_api_obj,test_obj):
             positive='Send password reset email schema validation is as expected',
             negative='Send password reset email schema validation is not as expected.')
         
-        # Initialize Email and get reset token
+        # And I initialize Email and get reset token
         email_service_obj = email_util.Email_Util()
-        encoded_url = email_service_obj.get_reset_token(imaphost, username, email_app_password,subject,sender)
+        encoded_url = email_service_obj.get_reset_token_url(imaphost, username, email_app_password,subject,sender)
         test_obj = PageFactory.get_page_object("forgot password page", base_url=test_obj.base_url)
         url = test_obj.get_reset_password_url(encoded_url)
-
-    
+        resetToken = email_service_obj.get_token_from_url(url)
+        result_flag = True if resetToken else False
         test_api_obj.log_result(result_flag, 
                                 positive='Get reset token successfully', 
                                 negative='Failed to get reset token')
+        
+        #Given I verify token reset password 
+        verify_token_reset_password_payload = auth_conf.verify_token_reset_password_payload(username,resetToken)
+        verifyTokenResetPassword = auth_engine_obj.verify_token_reset_password(headers,verify_token_reset_password_payload)
+        result_flag = True if verifyTokenResetPassword else False
+        test_api_obj.log_result(result_flag,
+                                positive='Verify token reset password successfully', 
+                                negative='Failed to verify token reset password')
         
         # Write out test summary
         expected_pass = test_api_obj.total
