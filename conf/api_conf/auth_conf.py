@@ -218,3 +218,16 @@ verify_token_reset_password_data = True
 verify_token_reset_password_schema = {
   "type": "boolean"
 }
+
+def password_reset_payload(answer,email,password,securityQuestion,token,userFirstName,userLastName): 
+   return {
+	  "token": token,
+	  "email": email,
+	  "userFirstName": userFirstName,
+	  "userLastname": userLastName,
+	  "password": password,
+	  "answer": answer,
+	  "securityQuestion": securityQuestion
+}
+
+password_reset_schema = {}

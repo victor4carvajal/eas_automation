@@ -22,14 +22,15 @@ def test_auth_engine(test_api_obj):
         actual_pass = -1
 
         # Set authentication details
-        username = login_conf.USERNAME
+        username = login_conf.USERNAME2
         password = login_conf.PASSWORD
         secret_key = login_conf.SECRET_KEY
         iv = login_conf.IV
 
         #Set email details
         imaphost = email_conf.imaphost
-        email_app_password = email_conf.app_password
+        email_username = email_conf.email_username2
+        email_app_password = email_conf.app_password2
         subject = email_conf.verify_email_subject
         sender = email_conf.sender
             
@@ -64,7 +65,7 @@ def test_auth_engine(test_api_obj):
         
         # Given I login at the email to the  get code
         email_service_obj = email_util.Email_Util()
-        code = email_service_obj.get_code(imaphost, username, email_app_password,subject,sender)
+        code = email_service_obj.get_code(imaphost, email_username, email_app_password,subject,sender)
         result_flag = True if code == False else True
         test_api_obj.log_result(result_flag, 
                                 positive='Get code successfully', 

@@ -197,7 +197,23 @@ class Email_Util:
         self.logout()
 
         return encoded_url
-    
+        
+    def decode_base64_token(self, encoded_token):
+        padding = len(encoded_token) % 4
+        if padding != 0:
+            encoded_token += '=' * (4 - padding)
+        try:
+            decoded_bytes = base64.urlsafe_b64decode(encoded_token)
+            decoded_str = decoded_bytes.decode('utf-8')
+            try:
+                decoded_json = json.loads(decoded_str)
+                return decoded_json 
+
+            except json.JSONDecodeError:
+                return decoded_str 
+        except Exception as e:
+            raise ValueError(f"Error decoding the token: {str(e)}")
+        
     def get_token_from_url(self, url):
         parsed_url = urlparse(url)
         query = parsed_url.query
@@ -208,27 +224,40 @@ class Email_Util:
                 token = unquote(value)
                 break
         if token:
-            decoded_token = self.decode_base64_token(token)
+            decoded_str = self.decode_base64_token(token)
+            decoded_token = decoded_str.get("token")
             return decoded_token
         else:
             raise ValueError("No token found in the URL.")
-
-    def decode_base64_token(self, encoded_token):
-        padding = len(encoded_token) % 4
-        if padding != 0:
-            encoded_token += '=' * (4 - padding)
         
-        try:
-            decoded_bytes = base64.urlsafe_b64decode(encoded_token)
-            decoded_str = decoded_bytes.decode('utf-8')
-            try:
-                decoded_json = json.loads(decoded_str)
-                token = decoded_json.get('token')
-                if token:
-                    return token
-                else:
-                    raise ValueError("The 'token' field was not found in the decoded JSON.")
-            except json.JSONDecodeError:
-                return decoded_str
-        except Exception as e:
-            raise ValueError(f"Error decoding the token: {str(e)}")
+    def get_user_first_name_from_url(self, url):
+        parsed_url = urlparse(url)
+        query = parsed_url.query
+        token = None
+        for param in query.split('&'):
+            key, value = param.split('=')
+            if key == 'token':
+                token = unquote(value)
+                break
+        if token:
+            decoded_str = self.decode_base64_token(token)
+            decoded_user_first_name = decoded_str.get("userFirstName")
+            return decoded_user_first_name
+        else:
+            raise ValueError("No userFirstName found in the URL.")
+        
+    def get_user_last_name_from_url(self, url):
+        parsed_url = urlparse(url)
+        query = parsed_url.query
+        token = None
+        for param in query.split('&'):
+            key, value = param.split('=')
+            if key == 'token':
+                token = unquote(value)
+                break
+        if token:
+            decoded_str = self.decode_base64_token(token)
+            decoded_user_last_name = decoded_str.get("userLastname")
+            return decoded_user_last_name
+        else:
+            raise ValueError("No userLastname found in the URL.")

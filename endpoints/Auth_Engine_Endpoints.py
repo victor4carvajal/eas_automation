@@ -63,6 +63,17 @@ class Auth_Endpoint_Endpoints:
             'error':response.get('error',None)
         }
     
+    def password_reset(self,payload,headers):
+        "Resets the password"
+        url = self.auth_url(f"/PasswordReset")
+        response = self.post(url,headers=headers,json=payload)
+        return {
+            'text':response.get('text',None),
+            'json_response':response.get('json_response',{}),
+            'status_code':response.get('status_code',None),
+            'error':response.get('error',None)
+        }
+    
     # Not in use 
     def vendor(self,payload,headers):
         "vendor"
@@ -101,18 +112,6 @@ class Auth_Endpoint_Endpoints:
     def check_password(self,payload,headers):
         "Checks the password"
         url = self.auth_url(f"/checkPassword")
-        response = self.post(url,headers=headers,json=payload)
-        return {
-            'text':response.get('text',None),
-            'json_response':response.get('json_response',{}),
-            'status_code':response.get('status_code',None),
-            'error':response.get('error',None)
-        }
-    
-    
-    def password_reset(self,payload,headers):
-        "Resets the password"
-        url = self.auth_url(f"/PasswordReset")
         response = self.post(url,headers=headers,json=payload)
         return {
             'text':response.get('text',None),

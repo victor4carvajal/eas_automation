@@ -5,14 +5,14 @@ imaphost ="imap.gmail.com"  #Add imap hostname of your email client
 verify_email_subject = "Please verify your sign in"
 send_password_reset_email_subject = "Please reset your password"
 sender = "info@gmstek.com"
-username = os.environ.get('USERNAME')
 
-#Login has to use the app password because of Gmail security configuration
-# 1. Setup 2 factor authentication
-# 2. Follow the 2 factor authentication setup wizard to enable an app password
-#Src: https://support.google.com/accounts/answer/185839?hl=en
-#Src: https://support.google.com/mail/answer/185833?hl=en
-app_password = os.environ.get('APP_PASSWORD')
+# User details for password recovery
+email_username1 = os.environ.get('EMAIL_USERNAME1')
+email_username2 = os.environ.get('EMAIL_USERNAME2')
+
+# User details with a predefined password
+app_password1 = os.environ.get('APP_PASSWORD1')
+app_password2 = os.environ.get('APP_PASSWORD2')
 
 #Details for sending pytest report
 smtp_ssl_host = 'smtp.gmail.com'  # Add smtp ssl host of your email client
