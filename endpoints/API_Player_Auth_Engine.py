@@ -94,3 +94,15 @@ class API_Player_Auth_Engine(Results):
                                 positive="Verify token reset password data is available",
                                 negative="Verify token reset password data is not found.")
         return verifyTokenResetPassword
+    
+    def password_reset(self,headers,payload):
+        
+        response = self.api_obj.password_reset(headers=headers,payload=payload)
+        if response.get('error',None):
+            raise ValueError(f'error when trying to reset password. {response.get("error",None)}')
+        passwordReset = response.get('status_code',False)
+        result_flag = True if passwordReset else False
+        self.conditional_write(result_flag,
+                                positive="Password reset status code is 200",
+                                negative="Password reset status code is not 200.")
+        return passwordReset
