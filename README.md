@@ -10,12 +10,6 @@ You can use this test automation framework to write
 
 3. __API automation__ scripts to test endpoints of your web/mobile applications
 
-&nbsp;
-
-![Qxf2 automation framework](https://qxf2.com/assets/img/framework_introduction.png)
-
-&nbsp;
-
 This framework is written in __Python__ and is based on the __Page Object Model__ - a design pattern that makes it easy to maintain and develop robust tests. We have also included our __API test automation framework__ based on the player-interface pattern in this repository. You can now write your API tests along with your Selenium and Appium tests.
 
 ------
@@ -147,7 +141,7 @@ a) If Python complains about an "Import" exception, please 'pip3 install $module
 
 b) If you don't have drivers set up for the web browsers, you will see a helpful error from Selenium telling you where to go and get them
 
-c) If your are using firefox 47 and above, you need to set up Geckodriver. Refer following link for setup: https://qxf2.com/blog/selenium-geckodriver-issue/
+c) If your are using firefox 47 and above, you need to set up Geckodriver.
 
 d) On Ubuntu, you may run into an issue installing the cryptography module. You need to `sudo apt-get install libssl-dev` and then run `sudo pip install -r requirements.txt`
 

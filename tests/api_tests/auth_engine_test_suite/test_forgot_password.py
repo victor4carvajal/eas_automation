@@ -49,7 +49,7 @@ def test_auth_engine(test_api_obj,test_obj):
                                 positive='Send password reset email data is as expected',
                                 negative='Send password reset email data is not as expected.')
         
-        #Then I validate send reset password email schema
+        # Then I validate send reset password email schema
         try:
             validator = jsonschema.Draft7Validator(auth_conf.send_password_reset_email_schema)
             result_flag = True if validator.is_valid(passwordResetEmail) else False
@@ -78,6 +78,23 @@ def test_auth_engine(test_api_obj,test_obj):
         test_api_obj.log_result(result_flag,
                                 positive='Verify token reset password successfully', 
                                 negative='Failed to verify token reset password')
+        
+        # When I verify toke reset password data
+        result_flag = True if verifyTokenResetPassword == auth_conf.verify_token_reset_password_data else False
+        test_api_obj.log_result(result_flag,
+                                positive='Verify token reset data is as expected',
+                                negative='Verify token reset data is not as expected.')
+        
+        #Then I validate verify token reset password schema
+        try:
+            validator = jsonschema.Draft7Validator(auth_conf.verify_token_reset_password_schema)
+            result_flag = True if validator.is_valid(verifyTokenResetPassword) else False
+        except jsonschema.exceptions.ValidationError as e:
+            test_api_obj.write(f"Response schema validation error: {e}")
+
+        test_api_obj.log_result(result_flag,
+            positive='Verify token reset password schema validation is as expected',
+            negative='Verify token reset password schema validation is not as expected.')
         
         # Write out test summary
         expected_pass = test_api_obj.total
