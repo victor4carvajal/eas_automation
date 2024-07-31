@@ -3,6 +3,7 @@ This class models the login page
 url: /login
 """
 
+import time
 from .Base_Page import Base_Page
 from utils.Wrapit import Wrapit
 
@@ -12,6 +13,7 @@ class Forgot_Password_Page(Base_Page):
     def get_reset_password_url(self,url):
         "Use this method to go to specific URL -- if needed"
         self.open_reset_password(url)
+        time.sleep(5)
         url = self.get_current_url()
 
         return url

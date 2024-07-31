@@ -205,3 +205,10 @@ resend_validation_code_schema = {
 
 send_password_reset_email_data = None
 send_password_reset_email_schema = {}
+
+def verify_token_reset_password_payload(email,token): 
+  return{
+    "email": email,
+    "token": token,
+    "tokenProvider": "reset_password"
+}

@@ -82,3 +82,15 @@ class API_Player_Auth_Engine(Results):
                                 positive="Send password reset email data is available",
                                 negative="Send password reset email data is not found.")
         return sendPasswordResetEmail
+    
+    def verify_token_reset_password(self,headers,payload):
+        
+        response = self.api_obj.verify_token_reset_password(headers=headers,payload=payload)
+        if response.get('error',None):
+            raise ValueError(f'error when trying to verify token reset password. {response.get("error",None)}')
+        verifyTokenResetPassword = response.get('json_response',False)
+        result_flag = True if verifyTokenResetPassword is not {} else False
+        self.conditional_write(result_flag,
+                                positive="Verify token reset password data is available",
+                                negative="Verify token reset password data is not found.")
+        return verifyTokenResetPassword

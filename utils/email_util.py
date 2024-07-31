@@ -13,14 +13,14 @@ A simple IMAP util that will help us with account activation
 3. Enhance get_latest_email_uid to make all parameters optional
 """
 #The import statements import: standard Python modules,conf
+import base64
+import json
 import re
 import os,sys,time,imaplib,email
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, unquote
 import requests
-
 from bs4 import BeautifulSoup
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import conf.utils_conf.email_conf as conf_file
 
 class Email_Util:
     "Class to interact with IMAP servers"
@@ -189,12 +189,46 @@ class Email_Util:
         
         return token
     
-    def get_reset_token(self,imaphost,username,email_app_password,subject,sender):
+    def get_reset_token_url(self,imaphost,username,email_app_password,subject,sender):
 
         self.connect(imaphost)
         self.login(username,email_app_password)
         encoded_url = self.get_last_reset_password_email_body(subject,sender)
-        #resetToken = self.get_link_reset_password(encoded_url)
         self.logout()
 
         return encoded_url
+    
+    def get_token_from_url(self, url):
+        parsed_url = urlparse(url)
+        query = parsed_url.query
+        token = None
+        for param in query.split('&'):
+            key, value = param.split('=')
+            if key == 'token':
+                token = unquote(value)
+                break
+        if token:
+            decoded_token = self.decode_base64_token(token)
+            return decoded_token
+        else:
+            raise ValueError("No token found in the URL.")
+
+    def decode_base64_token(self, encoded_token):
+        padding = len(encoded_token) % 4
+        if padding != 0:
+            encoded_token += '=' * (4 - padding)
+        
+        try:
+            decoded_bytes = base64.urlsafe_b64decode(encoded_token)
+            decoded_str = decoded_bytes.decode('utf-8')
+            try:
+                decoded_json = json.loads(decoded_str)
+                token = decoded_json.get('token')
+                if token:
+                    return token
+                else:
+                    raise ValueError("The 'token' field was not found in the decoded JSON.")
+            except json.JSONDecodeError:
+                return decoded_str
+        except Exception as e:
+            raise ValueError(f"Error decoding the token: {str(e)}")
