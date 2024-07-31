@@ -212,3 +212,9 @@ def verify_token_reset_password_payload(email,token):
     "token": token,
     "tokenProvider": "reset_password"
 }
+
+verify_token_reset_password_data = True
+
+verify_token_reset_password_schema = {
+  "type": "boolean"
+}
