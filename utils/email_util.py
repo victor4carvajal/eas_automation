@@ -194,7 +194,7 @@ class Email_Util:
         self.connect(imaphost)
         self.login(username,email_app_password)
         encoded_url = self.get_last_reset_password_email_body(subject,sender)
-        resetToken = self.get_link_reset_password(encoded_url)
+        #resetToken = self.get_link_reset_password(encoded_url)
         self.logout()
 
-        return resetToken
+        return encoded_url

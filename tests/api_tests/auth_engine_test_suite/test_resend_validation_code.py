@@ -35,31 +35,31 @@ def test_auth_engine(test_api_obj):
             
         auth_engine_obj = test_api_obj.get_api_engine_object(engine_name="auth engine")
         
-        #get token payload and headers
+        #Given I want to get token payload and headers
         headers = auth_engine_obj.get_headers()
         encypte_password = auth_engine_obj.encrypt(password,secret_key,iv)
         payload_token = auth_conf.token_payload(username,encypte_password)
 
-        #Send code 
+        #When I send validation code 
         token = auth_engine_obj.auth_token(headers,payload_token)
         result_flag = True if token == False else True
         test_api_obj.log_result(result_flag, 
                                 positive='Send code successfully', 
                                 negative='Failed to send code')
 
-        #Resend validation code 
+        #Then I resend validation code 
         resendCode = auth_engine_obj.resend_validation_code(headers,username)
         result_flag = True if resendCode == False else True
         test_api_obj.log_result(result_flag, 
                                 positive='Resend validation code successfully', 
                                 negative='Failed to resend validation code')
 
-        # Validate Token data
+        #When I validate Token data
         result_flag = True if resendCode == auth_conf.resend_validation_code_data else False
         test_api_obj.log_result(result_flag,
                                 positive='Resend validation code data is as expected',
                                 negative='Resend Validation code is not as expected.')
-        #Validate Token schema 
+        #And I validate Token schema 
         try:
             validator = jsonschema.Draft7Validator(auth_conf.resend_validation_code_schema)
             result_flag = True if validator.is_valid(resendCode) else False
@@ -70,7 +70,7 @@ def test_auth_engine(test_api_obj):
             positive='Resend validation code schema validation is as expected',
             negative='Resend Validation code schema validation is not as expected.')
         
-        # Initialize Email and get code
+        #Then I login at email to get code
         email_service_obj = email_util.Email_Util()
         code = email_service_obj.get_code(imaphost, username, email_app_password,subject,sender)
         result_flag = True if code == False else True

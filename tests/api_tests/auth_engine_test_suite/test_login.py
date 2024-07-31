@@ -35,23 +35,23 @@ def test_auth_engine(test_api_obj):
             
         auth_engine_obj = test_api_obj.get_api_engine_object(engine_name="auth engine")
         
-        #get token payload and headers
+        #Given I want to get token payload and headers
         headers = auth_engine_obj.get_headers()
         encypte_password = auth_engine_obj.encrypt(password,secret_key,iv)
         payload_token = auth_conf.token_payload(username,encypte_password)
 
-        #Send code 
+        #And I send code 
         token = auth_engine_obj.auth_token(headers,payload_token)
         result_flag = True if token == False else True
         test_api_obj.log_result(result_flag, 
                                 positive='Send code successfully', 
                                 negative='Failed to send code')
-        # Validate Token data
+        #When I validate Token data
         result_flag = True if token == auth_conf.token_data else False
         test_api_obj.log_result(result_flag,
                                 positive='Token data is as expected',
                                 negative='Token data is not as expected.')
-        #Validate Token schema 
+        #Then I validate Token schema 
         try:
             validator = jsonschema.Draft7Validator(auth_conf.token_schema)
             result_flag = True if validator.is_valid(token) else False
@@ -62,7 +62,7 @@ def test_auth_engine(test_api_obj):
             positive='Token schema validation is as expected',
             negative='Token schema validation is not as expected.')
         
-        # Initialize Email and get code
+        # Given I login at the email to the  get code
         email_service_obj = email_util.Email_Util()
         code = email_service_obj.get_code(imaphost, username, email_app_password,subject,sender)
         result_flag = True if code == False else True
@@ -70,17 +70,17 @@ def test_auth_engine(test_api_obj):
                                 positive='Get code successfully', 
                                 negative='Failed to get code')
         
-        #Set verify token payload 
+        #When I set verify token payload 
         verify_token_payload = auth_conf.verify_token_payload(code,username)
 
-        #Verify token 
+        #And I Verify token 
         verifyToken = auth_engine_obj.verify_token(headers, verify_token_payload)
         result_flag = True if verifyToken == False else True
         test_api_obj.log_result(result_flag, 
                                 positive='Verify token successfully', 
                                 negative='Failed to verify token')
 
-        #Validate Verify token schema
+        #Then I validate Verify token schema
         try:
             validator = jsonschema.Draft7Validator(auth_conf.verify_token_schema)
             result_flag = True if validator.is_valid(verifyToken) else False

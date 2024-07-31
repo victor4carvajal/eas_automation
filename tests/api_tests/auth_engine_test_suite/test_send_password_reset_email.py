@@ -11,10 +11,11 @@ import utils.email_util as email_util
 import conf.utils_conf.email_conf as email_conf
 import conf.utils_conf.login_conf as login_conf
 import conf.api_conf.auth_conf as auth_conf
+from page_objects.PageFactory import PageFactory
 
 # API Test for the auth engine
 @pytest.mark.API
-def test_auth_engine(test_api_obj):
+def test_auth_engine(test_api_obj,test_obj):
     "Run API tests"
     try:
         # Initialize variables
@@ -61,8 +62,11 @@ def test_auth_engine(test_api_obj):
         
         # Initialize Email and get reset token
         email_service_obj = email_util.Email_Util()
-        resetToken = email_service_obj.get_reset_token(imaphost, username, email_app_password,subject,sender)
-        result_flag = True if resetToken == False else True
+        encoded_url = email_service_obj.get_reset_token(imaphost, username, email_app_password,subject,sender)
+        test_obj = PageFactory.get_page_object("forgot password page", base_url=test_obj.base_url)
+        url = test_obj.get_reset_password_url(encoded_url)
+
+    
         test_api_obj.log_result(result_flag, 
                                 positive='Get reset token successfully', 
                                 negative='Failed to get reset token')
