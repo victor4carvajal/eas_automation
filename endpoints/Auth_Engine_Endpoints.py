@@ -131,6 +131,7 @@ class Auth_Endpoint_Endpoints:
             'error':response.get('error',None)
         }
     
+    #Not in use
     def update_password(self,payload,headers):
         "Updates the password"
         url = self.auth_url(f"/UpdatePassword")
@@ -142,6 +143,7 @@ class Auth_Endpoint_Endpoints:
             'error':response.get('error',None)
         }
     
+    #Not in use
     def update_security_question_with_pass(self,payload,headers):
         "Updates security question with Pass"
         url = self.auth_url(f"/UpdateSecurityQuestionWithPass")
