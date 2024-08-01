@@ -5,7 +5,8 @@ b) contains several useful wrappers around commonly used combination of actions
 c) maintains the test context/state
 """
 from .API_Interface import API_Interface
-from .Auth_API_Endpoints.API_Player_Auth_Engine import API_Player_Auth_Engine
+from .Auth_API_Players.API_Player_Auth_Engine import API_Player_Auth_Engine
+from .Auth_API_Players.API_Player_About_Engine import API_Player_About_Engine
 from utils.results import Results
 import logging
 import conf.utils_conf.base_url_conf as base_url_conf
@@ -26,6 +27,8 @@ class API_Player(Results):
         api_engine_name = engine_name.lower()
         if api_engine_name in ["auth", "auth engine"]:
             api_engine_obj = API_Player_Auth_Engine(self.api_obj, log_file_path=self.log_file_path)
+        elif api_engine_name in ["about", "about engine"]:
+            api_engine_obj = API_Player_About_Engine(self.api_obj, log_file_path=self.log_file_path)
         
         return api_engine_obj
     
