@@ -31,7 +31,7 @@ class API_Player_Auth_Engine(Results):
         headers = {
             'Content-Type': 'application/json'
         }
-        
+
         return headers
     
     def set_header_with_access_token(self,access_token):
@@ -142,5 +142,18 @@ class API_Player_Auth_Engine(Results):
         self.conditional_write(result_flag,
                                 positive="Check password data is available",
                                 negative="Check password data is not found.")
+        
+        return checkPassword
+    
+    def check_password_eas(self,headers,payload):
+        
+        response = self.api_obj.check_password_eas(headers=headers,payload=payload)
+        if response.get('error',None):
+            raise ValueError(f'error when trying to check password EAS. {response.get("error",None)}')
+        checkPassword = response.get('status_code',False)
+        result_flag = True if checkPassword else False
+        self.conditional_write(result_flag,
+                                positive="Check password EAS data is available",
+                                negative="Check password EAS data is not found.")
         
         return checkPassword

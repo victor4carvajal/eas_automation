@@ -75,8 +75,9 @@ def test_check_password(test_api_obj):
         # When I check password EAS 
         headersWithAccessToken = auth_engine_obj.set_header_with_access_token(authToken)
         check_password_payload = auth_conf.check_password_eas_payload(username,encypte_password)
-        checkPasswordEAS = auth_engine_obj.check_password(headersWithAccessToken,check_password_payload)
-        result_flag = True if checkPasswordEAS else False
+        checkPasswordEAS = auth_engine_obj.check_password_eas(headersWithAccessToken,check_password_payload)
+        print(checkPasswordEAS)
+        result_flag = True if (checkPasswordEAS == 200) else False
         test_api_obj.log_result(result_flag, 
                                 positive='Check password EAS successfully', 
                                 negative='Failed to check password EAS')
