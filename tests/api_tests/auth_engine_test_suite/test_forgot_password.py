@@ -36,7 +36,7 @@ def test_forgot_password(test_api_obj,test_obj):
         auth_engine_obj = test_api_obj.get_api_engine_object(engine_name="auth engine")
         
         #get token payload and headers
-        headers = auth_engine_obj.get_headers()
+        headers = auth_engine_obj.set_header_with_basic_auth()
 
         #Given I send password reset email
         passwordResetEmail = auth_engine_obj.send_password_reset_email(headers,username)

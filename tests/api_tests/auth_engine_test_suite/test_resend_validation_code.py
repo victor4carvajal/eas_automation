@@ -33,7 +33,7 @@ def test_resend_validation_code(test_api_obj):
         auth_engine_obj = test_api_obj.get_api_engine_object(engine_name="auth engine")
         
         #Given I want to get token payload and headers
-        headers = auth_engine_obj.get_headers()
+        headers = auth_engine_obj.set_header_with_basic_auth()
         encypte_password = auth_engine_obj.encrypt(password,secret_key,iv)
         payload_token = auth_conf.token_payload(username,encypte_password)
 
