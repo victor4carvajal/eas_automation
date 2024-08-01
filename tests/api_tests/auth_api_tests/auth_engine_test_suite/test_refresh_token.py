@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import utils.email_util as email_util
 import conf.utils_conf.email_conf as email_conf
 import conf.utils_conf.login_conf as login_conf
-import conf.api_conf.auth_conf as auth_conf
+import conf.api_conf.auth_api_conf.auth_conf as auth_conf
 
 # API Test for the auth engine
 @pytest.mark.API

@@ -7,7 +7,7 @@ import utils.email_util as email_util
 import utils.password_util as pass_util
 import conf.utils_conf.email_conf as email_conf
 import conf.utils_conf.login_conf as login_conf
-import conf.api_conf.auth_conf as auth_conf
+import conf.api_conf.auth_api_conf.auth_conf as auth_conf
 from page_objects.PageFactory import PageFactory
 
 # API Test for the auth engine
