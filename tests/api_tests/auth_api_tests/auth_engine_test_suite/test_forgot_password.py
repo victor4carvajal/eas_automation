@@ -10,7 +10,6 @@ import conf.utils_conf.login_conf as login_conf
 import conf.api_conf.auth_api_conf.auth_conf as auth_conf
 from page_objects.PageFactory import PageFactory
 
-# API Test for the auth engine
 @pytest.mark.API
 def test_forgot_password(test_api_obj,test_obj):
     "Run API tests"

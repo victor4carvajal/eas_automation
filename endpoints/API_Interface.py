@@ -4,11 +4,15 @@ Use the API_Player to talk to this class
 """
 import requests
 from .Base_API import Base_API
-from .Auth_API_Players.Auth_Engine_Endpoints import Auth_Endpoint_Endpoints
+from .Auth_API_Endpoints.Auth_Engine_Endpoints import Auth_Endpoint_Endpoints
+from .Auth_API_Endpoints.About_Engine_Endpoitns import About_Endpoint_Endpoints
+from .Auth_API_Endpoints.Questions_Engine_Endpoints import Questions_Endpoint_Endpoints
 
 class API_Interface(
     Base_API,
-    Auth_Endpoint_Endpoints):
+    Auth_Endpoint_Endpoints,
+    About_Endpoint_Endpoints,
+    Questions_Endpoint_Endpoints):
 
     "A composed interface for the API objects"
 
