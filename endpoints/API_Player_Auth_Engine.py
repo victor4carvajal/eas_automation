@@ -124,3 +124,16 @@ class API_Player_Auth_Engine(Results):
                                 negative="Refresh token data is not found.")
         
         return refreshToken
+    
+    def check_password(self,headers,payload):
+        
+        response = self.api_obj.check_password(headers=headers,payload=payload)
+        if response.get('error',None):
+            raise ValueError(f'error when trying to check password. {response.get("error",None)}')
+        checkPassword = response.get('json_response',False)
+        result_flag = True if checkPassword else False
+        self.conditional_write(result_flag,
+                                positive="Check password data is available",
+                                negative="Check password data is not found.")
+        
+        return checkPassword

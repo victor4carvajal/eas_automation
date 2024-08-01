@@ -309,3 +309,44 @@ refresh_token_schema = {
   },
   "required": ["content", "errorList", "successList", "warningList", "success"]
 }
+
+def check_password_payload(username,password): 
+   return{ 
+    "userName": username,
+    "password": password,
+    "login_p": "",
+    "eService": 2
+  }
+
+check_password_data = {
+    "content": True,
+    "errorList": {},
+    "successList": {},
+    "warningList": {},
+    "success": True
+}  
+
+check_password_schema = {
+  "type": "object",
+  "properties": {
+    "content": {
+      "type": "boolean"
+    },
+    "errorList": {
+      "type": "object",
+      "properties": {}
+    },
+    "successList": {
+      "type": "object",
+      "properties": {}
+    },
+    "warningList": {
+      "type": "object",
+      "properties": {}
+    },
+    "success": {
+      "type": "boolean"
+    }
+  },
+  "required": ["content", "errorList", "successList", "warningList", "success"]
+}
