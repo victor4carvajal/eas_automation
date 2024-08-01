@@ -1,7 +1,3 @@
-"""
-API Test
-test auth engine
-"""
 import os
 import sys
 import jsonschema

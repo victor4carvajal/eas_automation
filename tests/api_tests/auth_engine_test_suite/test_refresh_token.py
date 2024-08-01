@@ -1,7 +1,3 @@
-"""
-API Test
-test auth engine
-"""
 import os
 import sys
 import jsonschema
@@ -39,7 +35,7 @@ def test_refresh_token(test_api_obj):
         headers = auth_engine_obj.get_headers()
         encypte_password = auth_engine_obj.encrypt(password,secret_key,iv)
         payload_token = auth_conf.token_payload(username,encypte_password)
-        token = auth_engine_obj.auth_token(headers,payload_token)
+        auth_engine_obj.auth_token(headers,payload_token)
         email_service_obj = email_util.Email_Util()
         code = email_service_obj.get_code(imaphost, email_username, email_app_password,subject,sender)
         result_flag = True if code else False

@@ -1,7 +1,3 @@
-"""
-API Test
-test auth engine
-"""
 import os
 import sys
 import jsonschema
@@ -60,6 +56,7 @@ def test_resend_validation_code(test_api_obj):
         test_api_obj.log_result(result_flag,
                                 positive='Resend validation code data is as expected',
                                 negative='Resend Validation code is not as expected.')
+        
         #And I validate Token schema 
         try:
             validator = jsonschema.Draft7Validator(auth_conf.resend_validation_code_schema)
