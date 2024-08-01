@@ -34,7 +34,7 @@ def test_refresh_token(test_api_obj):
         subject = email_conf.verify_email_subject
         sender = email_conf.sender
             
-        # Given I login at eas 
+        # Given I login at eas app
         auth_engine_obj = test_api_obj.get_api_engine_object(engine_name="auth engine")
         headers = auth_engine_obj.get_headers()
         encypte_password = auth_engine_obj.encrypt(password,secret_key,iv)
