@@ -231,3 +231,81 @@ def password_reset_payload(answer,email,password,securityQuestion,token,userFirs
 }
 
 password_reset_schema = {}
+
+def refresh_token_payload(token):
+  return{
+    "token": token
+  }
+
+refresh_token_schema = {
+  "type": "object",
+  "properties": {
+    "content": {
+      "type": "object",
+      "properties": {
+        "userName": {
+          "type": "string",
+          "description": "Nombre de usuario asociado a la cuenta."
+        },
+        "email": {
+          "type": "string",
+          "description": "Dirección de correo electrónico asociada a la cuenta."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "Primer nombre del usuario."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Apellido del usuario."
+        },
+        "lastLogon": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Fecha y hora del último inicio de sesión en formato 'MM/DD/YYYY HH:mm:ss AM/PM'."
+        },
+        "authToken": {
+          "type": "string",
+          "description": "Token de autenticación en formato JWT (JSON Web Token)."
+        },
+        "simpleToken": {
+          "type": "string",
+          "description": "Token simplificado en formato JWT (JSON Web Token)."
+        },
+        "expiresIn": {
+          "type": "integer",
+          "description": "Tiempo en segundos hasta que el token expire."
+        },
+        "changePassword": {
+          "type": "boolean",
+          "description": "Indica si se requiere cambiar la contraseña."
+        },
+        "firstLogin": {
+          "type": "boolean",
+          "description": "Indica si es el primer inicio de sesión del usuario."
+        }
+      },
+      "required": ["userName", "email", "firstName", "lastName", "lastLogon", "authToken", "simpleToken", "expiresIn", "changePassword", "firstLogin"]
+    },
+    "errorList": {
+      "type": "object",
+      "properties": {},
+      "description": "Lista de errores, vacía si no hay errores."
+    },
+    "successList": {
+      "type": "object",
+      "properties": {},
+      "description": "Lista de éxitos, vacía si no hay éxitos."
+    },
+    "warningList": {
+      "type": "object",
+      "properties": {},
+      "description": "Lista de advertencias, vacía si no hay advertencias."
+    },
+    "success": {
+      "type": "boolean",
+      "description": "Indica si la operación fue exitosa."
+    }
+  },
+  "required": ["content", "errorList", "successList", "warningList", "success"]
+}
