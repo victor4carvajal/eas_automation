@@ -32,7 +32,7 @@ def test_refresh_token(test_api_obj):
             
         # Given I login at eas app
         auth_engine_obj = test_api_obj.get_api_engine_object(engine_name="auth engine")
-        headers = auth_engine_obj.get_headers()
+        headers = auth_engine_obj.set_header_with_basic_auth()
         encypte_password = auth_engine_obj.encrypt(password,secret_key,iv)
         payload_token = auth_conf.token_payload(username,encypte_password)
         auth_engine_obj.auth_token(headers,payload_token)

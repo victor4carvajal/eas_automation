@@ -25,14 +25,21 @@ class API_Player_Auth_Engine(Results):
         encrypted_base64_password = base64.b64encode(encrypted_bytes).decode('utf-8')
     
         return encrypted_base64_password
-
-    def get_headers(self):
-        """
-        Create header details with specific values.
-        """
+ 
+    def set_header_with_basic_auth(self):
+    
         headers = {
             'Content-Type': 'application/json'
         }
+        
+        return headers
+    
+    def set_header_with_access_token(self,access_token):
+        
+        headers = {
+            'Authorization':f'Bearer {access_token}'
+            }                 
+        
         return headers
 
     def auth_token(self,headers,payload):
