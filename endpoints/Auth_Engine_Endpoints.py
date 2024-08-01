@@ -96,6 +96,17 @@ class Auth_Endpoint_Endpoints:
             'error':response.get('error',None)
         }
     
+    def check_password_eas(self,payload,headers):
+        "checks the password eas"
+        url = self.auth_url(f"/CheckPasswordEAS")
+        response = self.post(url,headers=headers,json=payload)
+        return {
+            'text':response.get('text',None),
+            'json_response':response.get('json_response',{}),
+            'status_code':response.get('status_code',None),
+            'error':response.get('error',None)
+        }
+    
     # Not in use 
     def vendor(self,payload,headers):
         "vendor"
@@ -124,17 +135,6 @@ class Auth_Endpoint_Endpoints:
         "Updates the password"
         url = self.auth_url(f"/UpdatePassword")
         response = self.put(url,headers=headers,json=payload)
-        return {
-            'text':response.get('text',None),
-            'json_response':response.get('json_response',{}),
-            'status_code':response.get('status_code',None),
-            'error':response.get('error',None)
-        }
-    
-    def check_password_eas(self,payload,headers):
-        "checks the password eas"
-        url = self.auth_url(f"/CheckPasswordEAS")
-        response = self.post(url,headers=headers,json=payload)
         return {
             'text':response.get('text',None),
             'json_response':response.get('json_response',{}),
