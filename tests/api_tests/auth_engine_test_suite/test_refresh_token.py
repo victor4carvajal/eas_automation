@@ -14,7 +14,7 @@ import conf.api_conf.auth_conf as auth_conf
 
 # API Test for the auth engine
 @pytest.mark.API
-def test_resend_validation_code(test_api_obj):
+def test_refresh_token(test_api_obj):
     "Run API tests"
     try:
         # Initialize variables
@@ -27,57 +27,53 @@ def test_resend_validation_code(test_api_obj):
         secret_key = login_conf.SECRET_KEY
         iv = login_conf.IV
 
-        #Set email details
+        # Set email details
         imaphost = email_conf.imaphost
         email_username = email_conf.email_username2
         email_app_password = email_conf.app_password2
         subject = email_conf.verify_email_subject
         sender = email_conf.sender
             
+        # Given I login at eas 
         auth_engine_obj = test_api_obj.get_api_engine_object(engine_name="auth engine")
-        
-        #Given I want to get token payload and headers
         headers = auth_engine_obj.get_headers()
         encypte_password = auth_engine_obj.encrypt(password,secret_key,iv)
         payload_token = auth_conf.token_payload(username,encypte_password)
-
-        #When I send validation code 
         token = auth_engine_obj.auth_token(headers,payload_token)
-        result_flag = True if token == False else True
+        email_service_obj = email_util.Email_Util()
+        code = email_service_obj.get_code(imaphost, email_username, email_app_password,subject,sender)
+        result_flag = True if code else False
         test_api_obj.log_result(result_flag, 
-                                positive='Send code successfully', 
-                                negative='Failed to send code')
+                                positive='Login successfully', 
+                                negative='Failed to login')
 
-        #Then I resend validation code 
-        resendCode = auth_engine_obj.resend_validation_code(headers,username)
-        result_flag = True if resendCode == False else True
+        # And I get authToken
+        verify_token_payload = auth_conf.verify_token_payload(code,username)
+        verifyToken = auth_engine_obj.verify_token(headers, verify_token_payload)
+        authToken= verifyToken.get('content', {}).get('authToken', None)
+        result_flag = True if authToken else False
         test_api_obj.log_result(result_flag, 
-                                positive='Resend validation code successfully', 
-                                negative='Failed to resend validation code')
+                                positive='Gets authToken successfully', 
+                                negative='Failed to get authToken')
 
-        #When I validate Token data
-        result_flag = True if resendCode == auth_conf.resend_validation_code_data else False
-        test_api_obj.log_result(result_flag,
-                                positive='Resend validation code data is as expected',
-                                negative='Resend Validation code is not as expected.')
-        #And I validate Token schema 
+        # When I refresh token 
+        refresh_token_payload = auth_conf.refresh_token_payload(authToken)
+        refreshToken = auth_engine_obj.refresh_token(headers,refresh_token_payload)
+        result_flag = True if refreshToken else False
+        test_api_obj.log_result(result_flag, 
+                                positive='Refresh Token successfully', 
+                                negative='Failed to refresh token')
+        
+        #Then I validate refresh token schema
         try:
-            validator = jsonschema.Draft7Validator(auth_conf.resend_validation_code_schema)
-            result_flag = True if validator.is_valid(resendCode) else False
+            validator = jsonschema.Draft7Validator(auth_conf.refresh_token_schema)
+            result_flag = True if validator.is_valid(refreshToken) else False
         except jsonschema.exceptions.ValidationError as e:
             test_api_obj.write(f"Response schema validation error: {e}")
 
         test_api_obj.log_result(result_flag,
-            positive='Resend validation code schema validation is as expected',
-            negative='Resend Validation code schema validation is not as expected.')
-        
-        #Then I login at email to get code
-        email_service_obj = email_util.Email_Util()
-        code = email_service_obj.get_code(imaphost, email_username, email_app_password,subject,sender)
-        result_flag = True if code == False else True
-        test_api_obj.log_result(result_flag, 
-                                positive='Get code successfully', 
-                                negative='Failed to get code')
+            positive='Refresh token schema validation is as expected',
+            negative='Refresh token schema validation is not as expected.')
         
         # Write out test summary
         expected_pass = test_api_obj.total
@@ -92,4 +88,4 @@ def test_resend_validation_code(test_api_obj):
     assert expected_pass == actual_pass, "Test failed: %s" % __file__
 
 if __name__ == '__main__':
-    test_resend_validation_code()
+    test_refresh_token()

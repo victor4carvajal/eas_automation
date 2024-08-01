@@ -16,7 +16,7 @@ from page_objects.PageFactory import PageFactory
 
 # API Test for the auth engine
 @pytest.mark.API
-def test_auth_engine(test_api_obj,test_obj):
+def test_forgot_password(test_api_obj,test_obj):
     "Run API tests"
     try:
         # Initialize variables
@@ -155,4 +155,4 @@ def test_auth_engine(test_api_obj,test_obj):
     assert expected_pass == actual_pass, "Test failed: %s" % __file__
 
 if __name__ == '__main__':
-    test_auth_engine()
+    test_forgot_password()

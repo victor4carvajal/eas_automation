@@ -45,6 +45,7 @@ class API_Player_Auth_Engine(Results):
         self.conditional_write(result_flag,
                                 positive="Token data is available",
                                 negative="Token data is not found.")
+        
         return token
         
     def verify_token(self,headers,payload):
@@ -57,6 +58,7 @@ class API_Player_Auth_Engine(Results):
         self.conditional_write(result_flag,
                                 positive="Verify token data is available",
                                 negative="Verify token data is not found.")
+        
         return verifyToken
     
     def resend_validation_code(self,headers,userName):
@@ -69,6 +71,7 @@ class API_Player_Auth_Engine(Results):
         self.conditional_write(result_flag,
                                 positive="Resend Validation code data is available",
                                 negative="Resend Validation code data is not found.")
+        
         return resendValidationCode
     
     def send_password_reset_email(self,headers,userName):
@@ -81,6 +84,7 @@ class API_Player_Auth_Engine(Results):
         self.conditional_write(result_flag,
                                 positive="Send password reset email data is available",
                                 negative="Send password reset email data is not found.")
+        
         return sendPasswordResetEmail
     
     def verify_token_reset_password(self,headers,payload):
@@ -93,6 +97,7 @@ class API_Player_Auth_Engine(Results):
         self.conditional_write(result_flag,
                                 positive="Verify token reset password data is available",
                                 negative="Verify token reset password data is not found.")
+        
         return verifyTokenResetPassword
     
     def password_reset(self,headers,payload):
@@ -106,3 +111,16 @@ class API_Player_Auth_Engine(Results):
                                 positive="Password reset status code is 200",
                                 negative="Password reset status code is not 200.")
         return passwordReset
+    
+    def refresh_token(self,headers,payload):
+        
+        response = self.api_obj.refresh_token(headers=headers,payload=payload)
+        if response.get('error',None):
+            raise ValueError(f'error when trying to refresh token. {response.get("error",None)}')
+        refreshToken = response.get('json_response',False)
+        result_flag = True if refreshToken else False
+        self.conditional_write(result_flag,
+                                positive="Refresh token data is available",
+                                negative="Refresh token data is not found.")
+        
+        return refreshToken

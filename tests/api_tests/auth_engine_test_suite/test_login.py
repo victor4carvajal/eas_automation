@@ -14,7 +14,7 @@ import conf.api_conf.auth_conf as auth_conf
 
 # API Test for the auth engine
 @pytest.mark.API
-def test_auth_engine(test_api_obj):
+def test_login(test_api_obj):
     "Run API tests"
     try:
         # Initialize variables
@@ -105,4 +105,4 @@ def test_auth_engine(test_api_obj):
     assert expected_pass == actual_pass, "Test failed: %s" % __file__
 
 if __name__ == '__main__':
-    test_auth_engine()
+    test_login()
