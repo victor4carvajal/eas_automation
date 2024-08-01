@@ -8,7 +8,6 @@ import conf.utils_conf.email_conf as email_conf
 import conf.utils_conf.login_conf as login_conf
 import conf.api_conf.auth_api_conf.auth_conf as auth_conf
 
-# API Test for the auth engine
 @pytest.mark.API
 def test_refresh_token(test_api_obj):
     "Run API tests"
