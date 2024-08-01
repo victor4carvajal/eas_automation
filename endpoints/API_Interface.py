@@ -4,7 +4,7 @@ Use the API_Player to talk to this class
 """
 import requests
 from .Base_API import Base_API
-from .Auth_Engine_Endpoints import Auth_Endpoint_Endpoints
+from .Auth_API_Players.Auth_Engine_Endpoints import Auth_Endpoint_Endpoints
 
 class API_Interface(
     Base_API,

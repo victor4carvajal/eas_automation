@@ -5,7 +5,7 @@ b) contains several useful wrappers around commonly used combination of actions
 c) maintains the test context/state
 """
 from .API_Interface import API_Interface
-from .API_Player_Auth_Engine import API_Player_Auth_Engine
+from .Auth_API_Endpoints.API_Player_Auth_Engine import API_Player_Auth_Engine
 from utils.results import Results
 import logging
 import conf.utils_conf.base_url_conf as base_url_conf
