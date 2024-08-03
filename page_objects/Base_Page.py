@@ -116,7 +116,11 @@ class Base_Page(Borg,unittest.TestCase):
     def get_current_driver(self):
         "Return current driver."
         return self.driver
-
+    
+    def reload_page(self):
+        "Refresh page."
+        self.driver.refresh()
+        self.wait(5)
 
     def register_testrail(self):
         "Register TestRail with Page"

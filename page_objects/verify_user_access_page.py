@@ -4,7 +4,8 @@ url: /verify-user-access
 """
 
 from .Base_Page import Base_Page
-import conf.ui_conf.locators.verify_user_access_conf as locators
+import conf.ui_conf.locators.verify_user_access_locators_conf as locators
+import conf.ui_conf.locators.dashboard_locators_conf as dashboard_locators
 from utils.Wrapit import Wrapit
 
 class Verify_User_Access_Page(Base_Page):
@@ -30,12 +31,12 @@ class Verify_User_Access_Page(Base_Page):
                                negative='could not click submit button')
         return result_flag
 
-    def verify_profile_image(self):
-        "check the profile image is present"
-        result_flag = self.smart_wait(locators.profile_image,wait_seconds=15)
+    def verify_dashboard_panel(self):
+        "check the dashboard panel"
+        result_flag = self.smart_wait(dashboard_locators.dashboard_panel,wait_seconds=15)
         self.conditional_write(result_flag,
-                               positive='profile image present',
-                               negative='could not find profile image')
+                               positive='Dashboard panel present',
+                               negative='could not find dashboard panel')
         return result_flag
 
     @Wrapit._screenshot
@@ -43,7 +44,7 @@ class Verify_User_Access_Page(Base_Page):
         "enter validation code"
         self.set_code(code)
         result_flag = self.click_submit()
-        #result_flag &= self.verify_profile_image()
+        result_flag &= self.verify_dashboard_panel()
         self.conditional_write(result_flag,
                                positive='logged into the app',
                                negative='could not login')
