@@ -1,0 +1,1 @@
+dashboard_panel = "xpath,//app-dashboard/div/div"
