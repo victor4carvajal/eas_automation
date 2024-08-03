@@ -11,7 +11,7 @@ import conf.utils_conf.login_conf as login_conf
 import pytest
 
 @pytest.mark.GUI
-def test_login_successful(test_obj):
+def test_login_and_logout(test_obj):
     'Login successful'
 
     try:
@@ -30,30 +30,30 @@ def test_login_successful(test_obj):
         test_obj = PageFactory.get_page_object("Sign-in page", base_url=test_obj.base_url)
         result_flag = test_obj.login(login_conf.USERNAME2,login_conf.PASSWORD)
         test_obj.log_result(result_flag,
-                       positive='successfully send validation code',
-                       negative='failed to send validation code')
+                            positive='successfully send validation code',
+                            negative='failed to send validation code')
         
         # When I login at my email to the  get code
         email_service_obj = email_util.Email_Util()
         code = email_service_obj.get_code(imaphost, email_username, email_app_password,subject,sender)
         result_flag = True if code else False
         test_obj.log_result(result_flag, 
-                                positive='Get code successfully', 
-                                negative='Failed to get code')
+                            positive='Get code successfully', 
+                            negative='Failed to get code')
         
         # Then I enter the code to login successful 
         test_obj = PageFactory.get_page_object("verify-user-access page", base_url=test_obj.base_url)
         result_flag = test_obj.enter_code(code)
         test_obj.log_result(result_flag,
-                       positive='successfully logged into the EAS application',
-                       negative='failed to login to the EAS application')
+                            positive='successfully logged into the EAS application',
+                            negative='failed to login to the EAS application')
         
         # And I Logout
-        #test_obj = PageFactory.get_page_object("logout page",base_url=test_obj.base_url)
-        #result_flag = test_obj.click_logout()
-        #test_obj.log_result(result_flag,
-        #               positive='successfully to logout to the EAS application',
-        #               negative='failed to logout to the EAS application')
+        test_obj = PageFactory.get_page_object("dashboard page",base_url=test_obj.base_url)
+        result_flag = False if test_obj.logout() else True
+        test_obj.log_result(result_flag,
+                            positive='successfully to logout to the EAS application',
+                            negative='failed to logout to the EAS application')
 
         #Print out the result
         test_obj.write_test_summary()
