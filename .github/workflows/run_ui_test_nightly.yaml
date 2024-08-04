@@ -42,13 +42,16 @@ jobs:
         if: always()
         id: generate_summary
         run: |
-            echo "SUMMARY=$(python ./utils/generate_test_report.py --file_name report.html)" >> $GITHUB_OUTPUT
+          python ./utils/generate_test_report.py --file_name report.html > summary.txt
+          SUMMARY=$(cat summary.txt)
+          echo "SUMMARY=${SUMMARY}" >> $GITHUB_ENV
 
       - name: Notify Microsoft Teams
         if: always()
         run: |
           curl -H 'Content-Type: application/json' -d '{
-            "text": "UI Tests Run Summary: ${{ steps.generate_summary.outputs.SUMMARY }}"
+            "title": "UI Automation Test Results",
+            "text": "UI Tests Run Summary: ${{ env.SUMMARY }}\nStatus: ${{ job.status }}\nRepository: ${{ github.repository }}\nWorkflow Run: [View Results](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\nJob: ${{ github.job }}\nDuration: ${{ steps.duration.outputs.time }}\nBranch: ${{ github.ref }}\nEvent: ${{ github.event_name }}"
           }' ${{ secrets.TEAMS_WEBHOOK_URL }}
         env:
           TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
