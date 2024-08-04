@@ -2,9 +2,8 @@ name: UI Automation tests nightly run on dev
 
 on:
   workflow_dispatch:
-  workflow_call:
   schedule:
-    - cron: '0 12 * * *'  # Runs everyday at 6 PM IST (12 PM UTC)
+    - cron: '0 12 * * *'  
 
 jobs:
   ui-tests:
@@ -56,11 +55,10 @@ jobs:
         env:
           TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
 
-rerun-on-failure:
+  rerun-on-failure:
     runs-on: ubuntu-latest
-    needs: ui-tests  # Este job solo se ejecuta si ui-tests falla
-    if: failure()  # Ejecuta solo si el trabajo anterior falla
-
+    needs: ui-tests 
+    if: failure()
     steps:
       - name: Re-run UI tests after failure
         run: echo "Re-running the failed tests"
