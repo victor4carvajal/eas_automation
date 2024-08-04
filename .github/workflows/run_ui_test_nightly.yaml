@@ -1,4 +1,4 @@
-name: API Automation tests nightly run on dev
+name: UI Automation tests nightly run on dev
 
 on:
   workflow_dispatch:
@@ -7,18 +7,15 @@ on:
     - cron: '0 12 * * *'  # Runs everyday at 6 PM IST (12 PM UTC)
 
 jobs:
-  api-tests:
+  ui-tests:
     runs-on: ubuntu-latest
 
     env:
-      EMAIL_USERNAME1: ${{ secrets.EMAIL_USERNAME1 }}
-      APP_PASSWORD1: ${{ secrets.APP_PASSWORD1 }}
-      AES_USERNAME1: ${{ secrets.AES_USERNAME1 }}
-      SECURITY_QUESTION: ${{ secrets.SECURITY_QUESTION }}
-      ANSWER: ${{ secrets.ANSWER }}
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      IV: ${{ secrets.IV }}
-      AUTH_API_URL: ${{ secrets.AUTH_API_URL }}
+      EMAIL_USERNAME2: ${{ secrets.EMAIL_USERNAME2 }}
+      APP_PASSWORD2: ${{ secrets.APP_PASSWORD2 }}
+      AES_USERNAME2: ${{ secrets.AES_USERNAME2 }}
+      AES_PASSWORD: ${{ secrets.AES_PASSWORD }}
+      AES_ENV: ${{ secrets.AES_ENV }}
 
     steps:
       - name: Checkout code
@@ -32,27 +29,26 @@ jobs:
       - name: Install dependencies
         run: |
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo rm /etc/apt/sources.list.d/microsoft-prod.list
           sudo apt-get update
           sudo apt-get install -y ./google-chrome-stable_current_amd64.deb
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run API tests
+      - name: Run UI tests
         run: |
-          python -m pytest -k api_tests --html=tests_results/api_report.html
+          python -m pytest -k ui_tests --browser headless-chrome --html=tests_results/report.html
 
       - name: Generate Test Summary
         if: always()
         id: generate_summary
         run: |
-          echo "SUMMARY=$(python ./utils/generate_test_report.py --file_name api_report.html)" >> $GITHUB_OUTPUT
-      
+            echo "SUMMARY=$(python ./utils/generate_test_report.py --file_name report.html)" >> $GITHUB_OUTPUT
+
       - name: Notify Microsoft Teams
         if: always()
         run: |
           curl -H 'Content-Type: application/json' -d '{
-            "text": "API Tests Run Summary: ${{ steps.generate_summary.outputs.SUMMARY }}"
-          }' ${{ secrets.TEAMS_WEBHOOK_API_URL }}
+            "text": "UI Tests Run Summary: ${{ steps.generate_summary.outputs.SUMMARY }}"
+          }' ${{ secrets.TEAMS_WEBHOOK_URL }}
         env:
-          TEAMS_WEBHOOK_API_URL: ${{ secrets.TEAMS_WEBHOOK_API_URL }}
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
