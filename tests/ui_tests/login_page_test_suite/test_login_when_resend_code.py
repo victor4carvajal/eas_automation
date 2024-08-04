@@ -1,5 +1,5 @@
 """
-This test file will login successful on EAS
+This test file will resend validation code
 """
 import os,sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -11,8 +11,8 @@ import conf.utils_conf.login_conf as login_conf
 import pytest
 
 @pytest.mark.GUI
-def test_login_and_logout(test_obj):
-    'Login successful'
+def test_login_when_resend_code(test_obj):
+    'resend validation code successful'
 
     try:
         #Initalize flags for tests summary
@@ -33,9 +33,15 @@ def test_login_and_logout(test_obj):
                             positive='successfully send validation code',
                             negative='failed to send validation code')
         
+        # And I click on resend code
+        test_obj = PageFactory.get_page_object("verify-user-access page", base_url=test_obj.base_url)
+        result_flag = False if test_obj.resend_code() else True
+        test_obj.log_result(result_flag,
+                            positive='successfully resend validation code',
+                            negative='failed to resend validation code')
+        
         # When I login at my email to the  get code
         email_service_obj = email_util.Email_Util()
-        test_obj.wait(5)
         code = email_service_obj.get_code(imaphost, email_username, email_app_password,subject,sender)
         result_flag = True if code else False
         test_obj.log_result(result_flag, 
@@ -43,7 +49,6 @@ def test_login_and_logout(test_obj):
                             negative='Failed to get code')
         
         # Then I enter the code to login successful 
-        test_obj = PageFactory.get_page_object("verify-user-access page", base_url=test_obj.base_url)
         result_flag = test_obj.enter_code(code)
         test_obj.log_result(result_flag,
                             positive='successfully logged into the EAS application',
