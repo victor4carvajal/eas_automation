@@ -19,6 +19,7 @@ jobs:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       IV: ${{ secrets.IV }}
       AUTH_API_URL: ${{ secrets.AUTH_API_URL }}
+      AES_ENV: ${{ secrets.AES_ENV }}
 
     steps:
       - name: Checkout code
