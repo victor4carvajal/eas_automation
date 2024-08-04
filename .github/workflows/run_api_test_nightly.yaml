@@ -56,6 +56,7 @@ jobs:
       - name: Send Test Results to Microsoft Teams
         if: always()
         run: |
-          curl -H 'Content-Type: application/json' -d '{
-            "text": "API Tests Run Summary: ${{ steps.generate_summary.outputs.SUMMARY }}"
-          }' ${{ secrets.TEAMS_WEBHOOK_API_URL }}
+        curl -H 'Content-Type: application/json' -d '{
+        "title": "API Automation Test Results",
+        "text": "Status: ${{ job.status }}\nRepository: ${{ github.repository }}\nWorkflow Run: ${{ github.run_id }}\nJob: ${{ github.job }}\nDuration: ${{ steps.duration.outputs.time }}\nBranch: ${{ github.ref }}\nEvent: ${{ github.event_name }}"
+        }' ${{ secrets.TEAMS_WEBHOOK_API_URL }}
