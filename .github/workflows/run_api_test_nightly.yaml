@@ -19,7 +19,6 @@ jobs:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       IV: ${{ secrets.IV }}
       AUTH_API_URL: ${{ secrets.AUTH_API_URL }}
-      AES_ENV: ${{ secrets.AES_ENV }}
 
     steps:
       - name: Checkout code
@@ -32,28 +31,24 @@ jobs:
       
       - name: Install dependencies
         run: |
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo rm /etc/apt/sources.list.d/microsoft-prod.list
           sudo apt-get update
-          sudo apt-get install -y ./google-chrome-stable_current_amd64.deb
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run API tests
         run: |
-          python -m pytest -k api_tests --browser headless-chrome --html=tests_results/api_report.html
+          python -m pytest -k api_tests --html=tests_results/api_report.html
 
       - name: Generate Test Summary
         if: always()
         id: generate_summary
         run: |
           echo "SUMMARY=$(python ./utils/generate_test_report.py --file_name api_report.html)" >> $GITHUB_OUTPUT
-      
-      - name: Notify Microsoft Teams
+
+      - name: Send Test Results to Microsoft Teams
         if: always()
         run: |
           curl -H 'Content-Type: application/json' -d '{
             "text": "API Tests Run Summary: ${{ steps.generate_summary.outputs.SUMMARY }}"
           }' ${{ secrets.TEAMS_WEBHOOK_API_URL }}
-        env:
-          TEAMS_WEBHOOK_API_URL: ${{ secrets.TEAMS_WEBHOOK_API_URL }}
