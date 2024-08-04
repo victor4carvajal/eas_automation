@@ -1,0 +1,54 @@
+name: UI Automation tests nightly run on dev
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  schedule:
+    - cron: '0 12 * * *'  # Runs everyday at 6 PM IST (12 PM UTC)
+
+jobs:
+  ui-tests:
+    runs-on: ubuntu-latest
+
+    env:
+      EMAIL_USERNAME2: ${{ secrets.EMAIL_USERNAME2 }}
+      APP_PASSWORD2: ${{ secrets.APP_PASSWORD2 }}
+      AES_USERNAME2: ${{ secrets.AES_USERNAME2 }}
+      AES_PASSWORD: ${{ secrets.AES_PASSWORD }}
+      AES_ENV: ${{ secrets.AES_ENV }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt-get update
+          sudo apt-get install -y ./google-chrome-stable_current_amd64.deb
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run UI tests
+        run: |
+          python -m pytest -k ui_tests --browser headless-chrome --html=tests_results/report.html
+
+      - name: Generate Test Summary
+        if: always()
+        id: generate_summary
+        run: |
+            echo "SUMMARY=$(python ./utils/generate_test_report.py --file_name report.html)" >> $GITHUB_OUTPUT
+
+      - name: Notify Microsoft Teams
+        if: always()
+        run: |
+          curl -H 'Content-Type: application/json' -d '{
+            "text": "UI Tests Run Summary: ${{ steps.generate_summary.outputs.SUMMARY }}"
+          }' ${{ secrets.TEAMS_WEBHOOK_URL }}
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
