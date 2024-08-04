@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      EMAIL_USERNAME2: ${{ secrets.EMAIL_USERNAME2 }}
+      APP_PASSWORD2: ${{ secrets.APP_PASSWORD2 }}
+      AES_USERNAME2: ${{ secrets.AES_USERNAME2 }}
+      AES_PASSWORD: ${{ secrets.AES_PASSWORD }}
+      AES_ENV: ${{ secrets.AES_ENV }}
       EMAIL_USERNAME1: ${{ secrets.EMAIL_USERNAME1 }}
       APP_PASSWORD1: ${{ secrets.APP_PASSWORD1 }}
       AES_USERNAME1: ${{ secrets.AES_USERNAME1 }}
