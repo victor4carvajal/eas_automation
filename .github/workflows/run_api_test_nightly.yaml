@@ -51,7 +51,11 @@ jobs:
         if: always()
         id: generate_summary
         run: |
-          echo "SUMMARY=$(python ./utils/generate_test_report.py --file_name api_report.html)" >> $GITHUB_OUTPUT
+          # Generate the test summary
+          python ./utils/generate_test_report.py --file_name api_report.html > summary.txt
+          # Read the summary into an environment variable
+          SUMMARY=$(cat summary.txt)
+          echo "SUMMARY=${SUMMARY}" >> $GITHUB_ENV
 
       - name: Send Test Results to Microsoft Teams
         if: always()
