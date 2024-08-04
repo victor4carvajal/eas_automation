@@ -1,10 +1,9 @@
 name: API Automation tests nightly run on dev
 
 on:
-  workflow_dispatch:
-  workflow_call:
+  workflow_dispatch:  # Permite ejecutar el workflow manualmente
   schedule:
-    - cron: '0 12 * * *'  # Runs everyday at 6 PM IST (12 PM UTC)
+    - cron: '0 12 * * *'  # Ejecuta todos los días a las 12 PM UTC (6 PM IST)
 
 jobs:
   api-tests:
@@ -65,10 +64,10 @@ jobs:
             "text": "API Tests Run Summary: ${{ env.SUMMARY }}\nStatus: ${{ job.status }}\nRepository: ${{ github.repository }}\nWorkflow Run: [View Results](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\nJob: ${{ github.job }}\nDuration: ${{ steps.duration.outputs.time }}\nBranch: ${{ github.ref }}\nEvent: ${{ github.event_name }}"
           }' ${{ secrets.TEAMS_WEBHOOK_API_URL }}
 
-    rerun-on-failure:
+  rerun-on-failure:
     runs-on: ubuntu-latest
-    needs: api-tests  
-    if: failure() 
+    needs: api-tests  # Este job solo se ejecuta si api-tests falla
+    if: failure()  # Ejecuta solo si el trabajo anterior falla
 
     steps:
       - name: Re-run API tests after failure
