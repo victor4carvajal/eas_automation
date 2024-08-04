@@ -50,9 +50,7 @@ jobs:
         if: always()
         id: generate_summary
         run: |
-          # Generate the test summary
           python ./utils/generate_test_report.py --file_name api_report.html > summary.txt
-          # Read the summary into an environment variable
           SUMMARY=$(cat summary.txt)
           echo "SUMMARY=${SUMMARY}" >> $GITHUB_ENV
 
@@ -61,7 +59,7 @@ jobs:
         run: |
           curl -H 'Content-Type: application/json' -d '{
             "title": "API Automation Test Results",
-            "text": "API Tests Run Summary: ${{ env.SUMMARY }}\nStatus: ${{ job.status }}\nRepository: ${{ github.repository }}\nWorkflow Run: [View Results](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\nJob: ${{ github.job }}\nDuration: ${{ steps.duration.outputs.time }}\nBranch: ${{ github.ref }}\nEvent: ${{ github.event_name }}"
+            "text": "API Tests Run Summary: ${{ env.SUMMARY }}\nStatus: ${{ job.status }}\nRepository: ${{ github.repository }}\nWorkflow Run: [View Results](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\nJob: ${{ github.job }}\nDuration: ${{ steps.generate_summary.outputs.time }}\nBranch: ${{ github.ref }}\nEvent: ${{ github.event_name }}"
           }' ${{ secrets.TEAMS_WEBHOOK_API_URL }}
 
   rerun-on-failure:
@@ -70,6 +68,23 @@ jobs:
     if: failure()  # Ejecuta solo si el trabajo anterior falla
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo rm /etc/apt/sources.list.d/microsoft-prod.list
+          sudo apt-get update
+          sudo apt-get install -y ./google-chrome-stable_current_amd64.deb
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
       - name: Re-run API tests after failure
         run: echo "Re-running the failed tests"
       
@@ -90,5 +105,5 @@ jobs:
         run: |
           curl -H 'Content-Type: application/json' -d '{
             "title": "API Automation Retry Test Results",
-            "text": "API Tests Retry Run Summary: ${{ env.SUMMARY_RETRY }}\nStatus: ${{ job.status }}\nRepository: ${{ github.repository }}\nWorkflow Run: [View Results](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\nJob: ${{ github.job }}\nDuration: ${{ steps.duration.outputs.time }}\nBranch: ${{ github.ref }}\nEvent: ${{ github.event_name }}"
+            "text": "API Tests Retry Run Summary: ${{ env.SUMMARY_RETRY }}\nStatus: ${{ job.status }}\nRepository: ${{ github.repository }}\nWorkflow Run: [View Results](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\nJob: ${{ github.job }}\nDuration: ${{ steps.generate_summary_retry.outputs.time }}\nBranch: ${{ github.ref }}\nEvent: ${{ github.event_name }}"
           }' ${{ secrets.TEAMS_WEBHOOK_API_URL }}
