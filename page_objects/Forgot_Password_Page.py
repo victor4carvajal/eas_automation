@@ -14,5 +14,6 @@ class Forgot_Password_Page(Base_Page):
         self.open_reset_password(url)
         time.sleep(5)
         url = self.get_current_url()
+        self.reload_page()
 
         return url

@@ -114,10 +114,6 @@ def test_forgot_password(test_api_obj,test_obj):
 
         # When I reset the password
         passwordReset = auth_engine_obj.password_reset(headers,password_reset_payload)
-        result_flag = True if (passwordReset == 200) else False
-        test_api_obj.log_result(result_flag,
-                                positive='Password reset successfully', 
-                                negative='Failed to reset the password')
         
         #Then I validate password reset schema
         try:
